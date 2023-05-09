@@ -76,6 +76,6 @@ version: 1.0.0
       -RSeg.2                                               -Utilização do motor de base de dados Oracle 9i                                                        -Todos
 
 
-# 6.Protótipo das Iterações
 
+# 6.Protótipo das interações
     O protótipo pode ser visto com mais detalhe em: https://tinyurl.com/as603ptty
