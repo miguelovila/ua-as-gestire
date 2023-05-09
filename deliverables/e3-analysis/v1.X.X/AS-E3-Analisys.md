@@ -52,3 +52,30 @@ version: 1.0.0
        -BR2
 
 # 5.2.Requisitos não Funcionais
+    -Requisitos de usualidade
+        Refº                                                    Requisitos de interface e usabilidade                                                           CaU relacionados
+      -RInt.1                           -Usar fontes e cores que facilitem a legibilidade da informação. Texto legivel a 1m do ecrã.
+      -RInt.2                                           -Identificar alunos através da autenticação do idP da UA.
+      -RInt.3                                   -A plataforma pode ser acedida em qualquer lugar com acesso à internet.
+      -Rint.4                                    -A plataforma deve estar bem organizada e dividida por funcionalidades.
+
+    -Requisitos de desempenho 
+        Refº                                                        Requisito de desempenho                                                                    CaU relacionados
+      -RDes.1                                  -Garantir que a plataforma tenha capacidade para vários utilizadores em simultâneo.
+      -RDes.2                                           -Garantir responsividade para qualquer dispositivo.
+      -RDes.3                                   -Garantir que a plataforma esteja sempre atualizada para não ter perdas de desempenho.
+
+    -Requisitos de segurança e integridade dos dados
+        Refº                                            Requisito de segurança, privacidade e integridade de dados                                              CaU relacionados
+     -Proteção                                   -Proteção dos dados pessoais do utilizador pelos protocolos da Universidade.
+    -Autenticação                  -Informação apenas disponível para os utilizadores registados, ou seja alunos e professores da Universidade.
+
+    -Requisitos de interface com sistemas externos e com ambientes de execução
+        Refº                                     Requisito de interface com sistemas externos e com ambientes de execução                                      CaU relacionados
+      -RSeg.1                                          -Interface com POS actuais (modelo 234, interface SOC543): MB                                                -RF3
+      -RSeg.2                                               -Utilização do motor de base de dados Oracle 9i                                                        -Todos
+
+
+# 6.Protótipo das Iterações
+
+    O protótipo pode ser visto com mais detalhe em: https://tinyurl.com/as603ptty
