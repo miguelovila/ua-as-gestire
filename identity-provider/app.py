@@ -1,13 +1,13 @@
 import sqlite3
 from con import *
 from cfg import *
-from flask import Flask, current_app
+from flask import Flask, current_app, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-@app.route('/idp/profile/saml2/redirect/sso', methods=['GET', 'POST'])
-def welcome():
-    return current_app.send_static_file('index.html')
+@app.route('/idp/profile/saml2/redirect/sso', methods=['GET'])
+def loginPage():
+    return render_template('login.html')
 
 if __name__ == '__main__':
     initializeDatabase()

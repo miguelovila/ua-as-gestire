@@ -10,14 +10,14 @@
     />
     <title>Serviço de Autenticação</title>
     <link href="https://static.ua.pt/ua.ico" rel="shortcut icon" />
-    <link rel="stylesheet" type="text/css" href="./main.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" />
   </head>
   <body
     style="background-image: url('https://static.ua.pt/idp/bg/b/006-min.jpg')"
   >
     <div id="container">
       <div id="header">
-        <img src="./ua.gif" alt="Universidade de Aveiro" />
+        <img src="{{ url_for('static', filename='images/ua.gif') }}" alt="Universidade de Aveiro" />
         <div class="language">
           <a data-lang="pt" href="#">pt</a>
           <a data-lang="en" href="#">en</a>
@@ -112,7 +112,7 @@
           target=""
           class="compete"
           disabled
-          ><img src="./compete.gif" alt="Compete 2020"
+          ><img src="{{ url_for('static', filename='images/compete.gif') }}" alt="Compete 2020"
         /></a>
       </div>
 
