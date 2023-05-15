@@ -6,16 +6,24 @@ def initializeDatabase():
         if not os.path.exists(STORAGE_PATH): os.makedirs(STORAGE_PATH)
         con = sqlite3.connect(DB_PATH)
         cur = con.cursor()
-        #cur.execute("""
-        #    CREATE TABLE IF NOT EXISTS users (
-        #        id INTEGER PRIMARY KEY,
-        #        mec INTEGER NOT NULL,
-        #        name TEXT NOT NULL,
-        #        email TEXT NOT NULL,
-        #        password TEXT NOT NULL,
-        #        profile_picture TEXT NOT NULL
-        #    );      
-        #""")
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY,
+                mec INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                password TEXT NOT NULL,
+                profile_picture TEXT NOT NULL
+                reservations TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS tokens (
+                id INTEGER PRIMARY KEY,
+                token TEXT NOT NULL,
+                user_id INTEGER NOT NULL,
+                valid_until INTEGER NOT NULL
+            );
+        """)
         con.commit()
         con.close()
     except sqlite3.Error as error:
