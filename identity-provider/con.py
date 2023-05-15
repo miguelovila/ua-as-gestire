@@ -52,3 +52,4 @@ def fillSampleData():
         INSERT INTO users (mec, name, email, password, profile_picture)
         VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
     """, (bcrypt.hashpw("du2".encode('utf-8'), bcrypt.gensalt()),))
+    
