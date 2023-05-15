@@ -1,3 +1,4 @@
+import bcrypt
 import os, sqlite3
 from cfg import *
 
@@ -39,15 +40,15 @@ def fillSampleData():
     print("Filling sample data...")
     executor("""
         INSERT INTO users (mec, name, email, password, profile_picture)
-        VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', 'du0', 'https://i.imgur.com/F9Nf9Fx_d.webp?fidelity=grand');
-    """)
+        VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', ?, 'https://i.imgur.com/F9Nf9Fx_d.webp?fidelity=grand');
+    """, (bcrypt.hashpw("du0".encode('utf-8'), bcrypt.gensalt()),))
 
     executor("""
         INSERT INTO users (mec, name, email, password, profile_picture)
-        VALUES (107001, 'Dummy User One', 'du1@ua.pt', 'du1', 'https://i.imgur.com/O9Wmyek_d.webp?fidelity=grand');
-    """)
+        VALUES (107001, 'Dummy User One', 'du1@ua.pt', ?, 'https://i.imgur.com/O9Wmyek_d.webp?fidelity=grand');
+    """, (bcrypt.hashpw("du1".encode('utf-8'), bcrypt.gensalt()),))
 
     executor("""
         INSERT INTO users (mec, name, email, password, profile_picture)
-        VALUES (107002, 'Dummy User Two', 'du2@ua.pt', 'du2', 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
-    """)
+        VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
+    """, (bcrypt.hashpw("du2".encode('utf-8'), bcrypt.gensalt()),))
