@@ -1,6 +1,12 @@
 ## About
 
 This is a simple service that allows users to and login. It is built using [Flask](https://flask.palletsprojects.com/en/1.1.x/) and [SQLite](https://www.sqlite.org/index.html). This service is intended to be used as prototype for a more complex service. You can access the service at this url: [http://127.0.0.1:5000/idp/profile/saml2/redirect/sso](http://127.0.0.1:5000/idp/profile/saml2/redirect/sso)
+
+## TODO's
+
+- [ ] Update the redirect url to the correct one.
+- [ ] Add some visual feedback to the user when the login fails.
+
 ## Developing
 
 ### Setting up the environment
