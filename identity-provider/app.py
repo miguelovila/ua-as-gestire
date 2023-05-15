@@ -24,4 +24,4 @@ def loginPage():
 if __name__ == '__main__':
     initializeDatabase()
     fillSampleData()
-    app.run(host='0.0.0.0', port=10222)
+    app.run(host='0.0.0.0', port=5000)
