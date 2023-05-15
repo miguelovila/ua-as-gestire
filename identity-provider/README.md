@@ -6,6 +6,7 @@ This is a simple service that allows users to and login. It is built using [Flas
 
 - [ ] Update the redirect url to the correct one.
 - [ ] Add some visual feedback to the user when the login fails.
+- [ ] Create the container image for the service.
 
 ## Developing
 
