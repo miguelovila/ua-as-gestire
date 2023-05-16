@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestire/dashboard.dart';
 
 final usernameController = TextEditingController();
 final passwordController = TextEditingController();
@@ -27,9 +28,9 @@ class Login extends StatelessWidget {
                   child: Column(children: [
                     Image(
                       image: AssetImage(logoPath),
-                      width: 350,
+                      width: 320,
                     ),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 130),
                     Text(
                       'Sign in to Gestire with your UA account!',
                       textAlign: TextAlign.center,
@@ -50,7 +51,7 @@ class Login extends StatelessWidget {
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Username',
-                        helperText: 'johndoe@ua.pt',
+                        helperText: 'Example: johndoe@ua.pt',
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -67,9 +68,10 @@ class Login extends StatelessWidget {
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Password',
+                        helperText: 'It better be a good one',
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
@@ -79,11 +81,44 @@ class Login extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Processing Data'),
-                              ),
+                            // show a loading indicator and wait two seconds
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return WillPopScope(
+                                  onWillPop: () async => false,
+                                  child: const AlertDialog(
+                                    content: SizedBox(
+                                      height: 100,
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             );
+                            Future.delayed(const Duration(seconds: 2), () {
+                              // close the dialog and navigate to the home page
+                              Navigator.pop(context);
+                              if (usernameController.text == 'admin@ua.pt') {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()));
+                              } else {
+                                usernameController.clear();
+                                passwordController.clear();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Invalid username or password!'),
+                                  ),
+                                );
+                              }
+                            });
                           }
                         },
                       ),
