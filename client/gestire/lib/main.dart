@@ -15,11 +15,11 @@ class MainApp extends StatelessWidget {
         title: 'Gestire',
         theme: ThemeData(
             useMaterial3: true,
-            colorSchemeSeed: Colors.green,
+            colorSchemeSeed: Colors.lightGreen,
             brightness: Brightness.light),
         darkTheme: ThemeData(
             useMaterial3: true,
-            colorSchemeSeed: Colors.green,
+            colorSchemeSeed: Colors.lightGreen,
             brightness: Brightness.dark),
         home: const Login());
   }
