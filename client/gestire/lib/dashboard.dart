@@ -8,8 +8,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   int screenIndex = 0;
   late bool showNavigationDrawer;
 
@@ -19,17 +17,13 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void openDrawer() {
-    scaffoldKey.currentState!.openEndDrawer();
-  }
-
   Widget buildBottomNavigation() {
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Text('Page Indexs =  $screenIndex'),
+            Text('Page Index =  $screenIndex'),
           ],
         ),
       ),
@@ -41,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
           });
         },
         destinations: destinations.map(
-          (ExampleDestination destination) {
+          (Destination destination) {
             return NavigationDestination(
               label: destination.label,
               icon: destination.icon,
@@ -56,34 +50,36 @@ class _DashboardState extends State<Dashboard> {
 
   Widget buildRailNavigation(BuildContext context) {
     return Scaffold(
-        key: scaffoldKey,
-        body: SafeArea(
-          bottom: false,
-          top: false,
-          child: Row(
-            children: <Widget>[
-              SizedBox(
-                width: 150,
-                child: NavigationDrawer(
-                  onDestinationSelected: handleScreenChanged,
-                  selectedIndex: screenIndex,
-                  children: <Widget>[
-                    ...destinations.map(
-                      (ExampleDestination destination) {
-                        return NavigationDrawerDestination(
-                          label: Text(destination.label),
-                          icon: destination.icon,
-                          selectedIcon: destination.selectedIcon,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const VerticalDivider(thickness: 0, width: 0),
-            ],
-          ),
-        ));
+      body: SafeArea(
+        child: Row(
+          children: <Widget>[
+            NavigationRail(
+              groupAlignment: 0.0,
+              labelType: NavigationRailLabelType.all,
+              selectedIndex: screenIndex,
+              useIndicator: true,
+              elevation: 10,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  screenIndex = index;
+                });
+              },
+              minWidth: 100,
+              destinations: destinations.map(
+                (Destination destination) {
+                  return NavigationRailDestination(
+                    label: Text(destination.label),
+                    icon: destination.icon,
+                    selectedIcon: destination.selectedIcon,
+                  );
+                },
+              ).toList(),
+            ),
+            const VerticalDivider(thickness: 1, width: 1),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -100,21 +96,18 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-class ExampleDestination {
-  const ExampleDestination(this.label, this.icon, this.selectedIcon);
-
+class Destination {
+  const Destination(this.label, this.icon, this.selectedIcon);
   final String label;
   final Widget icon;
   final Widget selectedIcon;
 }
 
-const List<ExampleDestination> destinations = <ExampleDestination>[
-  ExampleDestination(
-      'page 0', Icon(Icons.widgets_outlined), Icon(Icons.widgets)),
-  ExampleDestination(
-      'page 1', Icon(Icons.format_paint_outlined), Icon(Icons.format_paint)),
-  ExampleDestination(
-      'page 2', Icon(Icons.text_snippet_outlined), Icon(Icons.text_snippet)),
-  ExampleDestination(
-      'page 3', Icon(Icons.invert_colors_on_outlined), Icon(Icons.opacity)),
+const List<Destination> destinations = <Destination>[
+  Destination(
+      'Rooms', Icon(Icons.meeting_room_outlined), Icon(Icons.meeting_room)),
+  Destination('Equipments', Icon(Icons.home_repair_service_outlined),
+      Icon(Icons.home_repair_service)),
+  Destination('Records', Icon(Icons.history_outlined), Icon(Icons.history)),
+  Destination('Settings', Icon(Icons.settings_outlined), Icon(Icons.settings)),
 ];
