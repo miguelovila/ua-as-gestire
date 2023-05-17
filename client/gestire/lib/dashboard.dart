@@ -3,6 +3,7 @@ import 'package:gestire/rooms.dart';
 import 'package:gestire/equipments.dart';
 import 'package:gestire/records.dart';
 import 'package:gestire/settings.dart';
+import 'dart:async';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int currentPage = 0;
   late PageController pageController;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -27,8 +29,13 @@ class _DashboardState extends State<Dashboard> {
         body: PageView(
           controller: pageController,
           onPageChanged: (int index) {
-            setState(() {
-              currentPage = index;
+            if (_timer != null) {
+              _timer!.cancel();
+            }
+            _timer = Timer(const Duration(milliseconds: 200), () {
+              setState(() {
+                currentPage = index;
+              });
             });
           },
           children: const [
