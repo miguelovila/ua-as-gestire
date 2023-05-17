@@ -1,98 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:gestire/rooms.dart';
+import 'package:gestire/equipments.dart';
+import 'package:gestire/records.dart';
+import 'package:gestire/settings.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  int screenIndex = 0;
-  late bool showNavigationDrawer;
-
-  void handleScreenChanged(int selectedScreen) {
-    setState(() {
-      screenIndex = selectedScreen;
-    });
-  }
-
-  Widget buildBottomNavigation() {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text('Page Index =  $screenIndex'),
-          ],
-        ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: screenIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            screenIndex = index;
-          });
-        },
-        destinations: destinations.map(
-          (Destination destination) {
-            return NavigationDestination(
-              label: destination.label,
-              icon: destination.icon,
-              selectedIcon: destination.selectedIcon,
-              tooltip: destination.label,
-            );
-          },
-        ).toList(),
-      ),
-    );
-  }
-
-  Widget buildRailNavigation(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Row(
-          children: <Widget>[
-            NavigationRail(
-              groupAlignment: 0.0,
-              labelType: NavigationRailLabelType.all,
-              selectedIndex: screenIndex,
-              useIndicator: true,
-              elevation: 10,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  screenIndex = index;
-                });
-              },
-              minWidth: 100,
-              destinations: destinations.map(
-                (Destination destination) {
-                  return NavigationRailDestination(
-                    label: Text(destination.label),
-                    icon: destination.icon,
-                    selectedIcon: destination.selectedIcon,
-                  );
-                },
-              ).toList(),
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-          ],
-        ),
-      ),
-    );
-  }
+  int currentPage = 0;
+  late PageController pageController;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    showNavigationDrawer = MediaQuery.of(context).size.width >= 700;
+  void initState() {
+    super.initState();
+    pageController = PageController(initialPage: currentPage);
   }
 
   @override
   Widget build(BuildContext context) {
-    return showNavigationDrawer
-        ? buildRailNavigation(context)
-        : buildBottomNavigation();
+    return Scaffold(
+        body: PageView(
+          controller: pageController,
+          onPageChanged: (int index) {
+            setState(() {
+              currentPage = index;
+            });
+          },
+          children: const [
+            Rooms(),
+            Equipments(),
+            Records(),
+            Settings(),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: currentPage,
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPage = index;
+              pageController.animateToPage(currentPage,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.ease);
+            });
+          },
+          destinations: destinations.map(
+            (Destination destination) {
+              return NavigationDestination(
+                label: destination.label,
+                icon: destination.icon,
+                selectedIcon: destination.selectedIcon,
+                tooltip: destination.label,
+              );
+            },
+          ).toList(),
+        ));
   }
 }
 
