@@ -66,66 +66,68 @@ class _EquipmentsState extends State<Equipments> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                onChanged: _filterEquipments,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                  ),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.search),
-                      SizedBox(width: 25),
-                    ],
+          child: SafeArea(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  onChanged: _filterEquipments,
+                  decoration: const InputDecoration(
+                    hintText: 'Search',
+                    contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                    ),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search),
+                        SizedBox(width: 25),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20.0),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredEquipments.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(4)),
-                              child: Image.asset(
-                                _filteredEquipments[index].image,
-                                fit: BoxFit.cover,
+                const SizedBox(height: 20.0),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _filteredEquipments.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Column(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(4)),
+                                child: Image.asset(
+                                  _filteredEquipments[index].image,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListTile(
-                              title: Text(_filteredEquipments[index].name),
-                              subtitle: Row(
-                                children: [
-                                  Icon(Icons.check_circle),
-                                  SizedBox(width: 5),
-                                  Text(
-                                      'Units Left: ${_filteredEquipments[index].availability}'),
-                                ],
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ListTile(
+                                title: Text(_filteredEquipments[index].name),
+                                subtitle: Row(
+                                  children: [
+                                    const Icon(Icons.control_point_duplicate),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                        '${_filteredEquipments[index].availability}'),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -17,7 +17,7 @@ class _RoomsState extends State<Rooms> {
       seats: 30,
     ),
     Room(
-      name: 'Videoconference Room 2',
+      name: 'Classroom 2',
       image: 'assets/classroom2.jpg',
       computers: 15,
       powerOutlets: 8,
@@ -34,10 +34,9 @@ class _RoomsState extends State<Rooms> {
       name: 'Auditorium 4',
       image: 'assets/anf.jpg',
       computers: 0,
-      powerOutlets: 20,
+      powerOutlets: 30,
       seats: 200,
     ),
-
     // Add more rooms as needed
   ];
 
@@ -74,72 +73,91 @@ class _RoomsState extends State<Rooms> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                  ),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.filter_alt),
-                      SizedBox(width: 15),
-                      Icon(Icons.qr_code),
-                      SizedBox(width: 25),
-                    ],
+          child: SafeArea(
+            child: Column(
+              children: [
+                TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search',
+                    contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                    ),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.filter_alt),
+                        SizedBox(width: 15),
+                        Icon(Icons.qr_code),
+                        SizedBox(width: 25),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20.0),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredRooms.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Image.asset(
-                              filteredRooms[index].image,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListTile(
-                              title: Text(filteredRooms[index].name),
-                              subtitle: Row(
-                                children: [
-                                  const Icon(Icons.computer),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                      'Computers: ${filteredRooms[index].computers}'),
-                                  const SizedBox(width: 10),
-                                  const Icon(Icons.power),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                      'Power Outlets: ${filteredRooms[index].powerOutlets}'),
-                                  const SizedBox(width: 10),
-                                  const Icon(Icons.event_seat),
-                                  const SizedBox(width: 5),
-                                  Text('Seats: ${filteredRooms[index].seats}'),
-                                ],
+                const SizedBox(height: 20.0),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredRooms.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Column(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Image.asset(
+                                filteredRooms[index].image,
+                                fit: BoxFit.cover,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ListTile(
+                                title: Text(filteredRooms[index].name),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 5.0, bottom: 1.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.computer),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                              '${filteredRooms[index].computers}'),
+                                        ],
+                                      ),
+                                      SizedBox(width: 10),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.power),
+                                          const SizedBox(width: 0),
+                                          Text(
+                                              '${filteredRooms[index].powerOutlets}'),
+                                        ],
+                                      ),
+                                      SizedBox(width: 10),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.event_seat),
+                                          const SizedBox(width: 3),
+                                          Text('${filteredRooms[index].seats}'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
