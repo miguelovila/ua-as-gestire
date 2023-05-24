@@ -49,9 +49,9 @@ def authenticate():
         ), 401
     
 @app.route('/api/auth/check', methods=['POST'])
-def checkToken(token = None):
+def checkToken(token = None, external = True):
     try:
-        if token == None:
+        if external:
             content = json.loads(request.data)
             token = content['token']
         db_token = executor("SELECT * FROM tokens WHERE token = ?;", (token,))
@@ -59,7 +59,7 @@ def checkToken(token = None):
             db_token = db_token[0]
             if int(time.time()) < db_token[2]:
                 executor("UPDATE tokens SET expiration = ? WHERE id = ?;", (int(time.time()) + 600, db_token[0]))
-                if token == None:
+                if external:
                     return json.dumps(
                         {
                           "valid": True
@@ -68,7 +68,7 @@ def checkToken(token = None):
                 return True
             else:
                 executor("DELETE FROM tokens WHERE id = ?;", (db_token[0],))
-                if token == None:
+                if external:
                     return json.dumps(
                         {
                           "valid": False
@@ -76,7 +76,7 @@ def checkToken(token = None):
                     ), 401
                 return False
         else:
-            if token == None:
+            if external:
                 return json.dumps(
                     {
                       "valid": False
@@ -84,7 +84,7 @@ def checkToken(token = None):
                 ), 401
             return False
     except:
-        if token == None:
+        if external:
             return json.dumps(
                 {
                   "error": "Invalid request"
@@ -96,7 +96,7 @@ def checkToken(token = None):
 def listRooms():
     try:
         content = json.loads(request.data)
-        if not checkToken(content['token']):
+        if not checkToken(content['token'], False):
             return json.dumps(
                 {
                   "error": "Access denied"
@@ -126,7 +126,7 @@ def listRooms():
 def getRoom(room_id):
     try:
         content = json.loads(request.data)
-        if not checkToken(content['token']):
+        if not checkToken(content['token'], False):
             return json.dumps(
                 {
                   "error": "Access denied"
@@ -156,7 +156,7 @@ def getRoom(room_id):
 def listEquipments():
     try:
         content = json.loads(request.data)
-        if not checkToken(content['token']):
+        if not checkToken(content['token'], False):
             return json.dumps(
                 {
                   "error": "Access denied"
@@ -186,7 +186,7 @@ def listEquipments():
 def getEquipment(equipment_id):
     try:
         content = json.loads(request.data)
-        if not checkToken(content['token']):
+        if not checkToken(content['token'], False):
             return json.dumps(
                 {
                   "error": "Access denied"
