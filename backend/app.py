@@ -13,9 +13,9 @@ def authenticate():
         content = json.loads(request.data)
         email = content['email']
         password = content['password']
-        if len(executor("SELECT * FROM users WHERE email = ?;", (email,))) > 0:
-            user = executor("SELECT * FROM users WHERE email = ?;", (email,))[0]
-            print(user)
+        user = executor("SELECT * FROM users WHERE email = ?;", (email,))
+        if len(user) > 0:
+            user = user[0]
             if bcrypt.checkpw(password.encode('utf-8'), user[4]):
                 return json.dumps(
                     {
@@ -40,18 +40,47 @@ def authenticate():
     except:
         return json.dumps(
             {
-                "error": "Invalid username or password"
+                "error": "Invalid request"
             }
         ), 401
+
 @app.route('/api/rooms', methods=['GET'])
 def listRooms():
     try:
         rooms = executor("SELECT * FROM rooms;")
+        if len(rooms) > 0:
+            return json.dumps(
+                {
+                    "rooms": rooms
+                }
+            ), 200
         return json.dumps(
             {
-                "rooms": rooms
+                "error": "No rooms found"
             }
-        ), 200
+        ),400
+    except:
+        return json.dumps(
+            {
+                "error": "Invalid request"
+            }
+        ),400
+    
+@app.route('/api/rooms/<int:room_id>', methods=['GET'])
+def getRoom(room_id):
+    try:
+        room = executor("SELECT * FROM rooms WHERE id = ?;", (room_id,))
+        if len(room) > 0:
+            return json.dumps(
+                {
+                    "room": room[0]
+                }
+            ), 200
+        return json.dumps(
+            {
+                "error": "Room not found"
+            }
+        ),400
     except:
         return json.dumps(
             {
