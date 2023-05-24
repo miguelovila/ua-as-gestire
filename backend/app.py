@@ -49,43 +49,60 @@ def authenticate():
         ), 401
     
 @app.route('/api/auth/check', methods=['POST'])
-def checkToken():
+def checkToken(token = None):
     try:
-        content = json.loads(request.data)
-        token = content['token']
+        if token == None:
+            content = json.loads(request.data)
+            token = content['token']
         db_token = executor("SELECT * FROM tokens WHERE token = ?;", (token,))
         if len(db_token) > 0:
             db_token = db_token[0]
             if int(time.time()) < db_token[2]:
                 executor("UPDATE tokens SET expiration = ? WHERE id = ?;", (int(time.time()) + 600, db_token[0]))
-                return json.dumps(
-                    {
-                      "valid": True
-                    }
-                ), 200
+                if token == None:
+                    return json.dumps(
+                        {
+                          "valid": True
+                        }
+                    ), 200
+                return True
             else:
                 executor("DELETE FROM tokens WHERE id = ?;", (db_token[0],))
+                if token == None:
+                    return json.dumps(
+                        {
+                          "valid": False
+                        }
+                    ), 401
+                return False
+        else:
+            if token == None:
                 return json.dumps(
                     {
                       "valid": False
                     }
                 ), 401
-        else:
+            return False
+    except:
+        if token == None:
             return json.dumps(
                 {
-                  "valid": False
+                  "error": "Invalid request"
                 }
             ), 401
-    except:
-        return json.dumps(
-            {
-              "error": "Invalid request"
-            }
-        ), 401
+        return False
 
 @app.route('/api/rooms', methods=['GET'])
 def listRooms():
     try:
+        content = json.loads(request.data)
+        if not checkToken(content['token']):
+            return json.dumps(
+                {
+                  "error": "Access denied"
+                }
+            ),401
+        
         rooms = executor("SELECT * FROM rooms;")
         if len(rooms) > 0:
             return json.dumps(
@@ -108,6 +125,14 @@ def listRooms():
 @app.route('/api/rooms/<int:room_id>', methods=['GET'])
 def getRoom(room_id):
     try:
+        content = json.loads(request.data)
+        if not checkToken(content['token']):
+            return json.dumps(
+                {
+                  "error": "Access denied"
+                }
+            ),401
+
         room = executor("SELECT * FROM rooms WHERE id = ?;", (room_id,))
         if len(room) > 0:
             return json.dumps(
