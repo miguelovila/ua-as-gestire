@@ -59,6 +59,23 @@ def listRooms():
             }
         ),400
     
+@app.route('/api/equipments', methods=['GET'])
+def listEquipaents():
+    try:
+        equipments = executor("SELECT * FROM equipments;")
+        return json.dump(
+            {
+                "equipments": equipments 
+            }
+        ),200
+    except:
+        return json.dumps(
+            {
+                "error": "Invalid request"
+            } 
+        ),400
+
+    
 if __name__ == '__main__':
     initializeDatabase()
     fillSampleUserData()
