@@ -19,6 +19,15 @@ def initializeDatabase():
         """)
 
         cur.execute("""
+            CREATE TABLE IF NOT EXISTS tokens (
+                id INTEGER PRIMARY KEY,
+                token TEXT NOT NULL,
+                expiration INTEGER NOT NULL,
+                user_id INTEGER NOT NULL
+            );
+        """)
+
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS rooms (
                 id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -35,11 +44,10 @@ def initializeDatabase():
                 name TEXT NOT NULL,
                 description TEXT NOT NULL,
                 reservations TEXT NOT NULL,
-                lockers TEXT NOT NULL,
+                locker TEXT NOT NULL,
                 image TEXT NOT NULL
             );
         """)
-            
 
         con.commit()
         con.close()
@@ -111,26 +119,26 @@ def fillSampleEquipmentData():
 
     print("Filling sample data...")
     executor("""
-        INSERT INTO equipments (name, description, reservations, lockers, image)
+        INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('Dummy Equipment Zero', 'This is a dummy equipment', '[]', '[]', 'https://i.imgur.com/F9Nf9Fx_d.webp?fidelity=grand');
     """)
 
     executor("""
-        INSERT INTO equipments (name, description, reservations, lockers, image)
+        INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('Dummy Equipment One', 'This is a dummy equipment', '[]', '[]', 'https://i.imgur.com/O9Wmyek_d.webp?fidelity=grand');
     """)
 
     executor("""
-        INSERT INTO equipments (name, description, reservations, lockers, image)
+        INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('Dummy Equipment Two', 'This is a dummy equipment', '[]', '[]', 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
     """)
 
     executor("""
-        INSERT INTO equipments (name, description, reservations, lockers, image)
+        INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('Dummy Equipment Three', 'This is a dummy equipment', '[]', '[]', 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
     """)
 
     executor("""
-        INSERT INTO equipments (name, description, reservations, lockers, image)
+        INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('Dummy Equipment Four', 'This is a dummy equipment', '[]', '[]', 'https://i.imgur.com/r7lTF4V_d.webp?fidelity=grand');
     """)    
