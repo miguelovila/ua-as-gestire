@@ -46,17 +46,19 @@ def authenticate():
 @app.route('/api/rooms', methods=['GET'])
 def listRooms():
     try:
-        pass
+        rooms = executor("SELECT * FROM rooms;")
+        return json.dumps(
+            {
+                "rooms": rooms
+            }
+        ), 200
     except:
-        return json.dumps{
+        return json.dumps(
             {
                 "error": "Invalid request"
             }
-        },400
-
-
-
-
+        ),400
+    
 if __name__ == '__main__':
     initializeDatabase()
     fillSampleUserData()
