@@ -43,6 +43,19 @@ def authenticate():
                 "error": "Invalid username or password"
             }
         ), 401
+@app.route('/api/rooms', methods=['GET'])
+def listRooms():
+    try:
+        pass
+    except:
+        return json.dumps{
+            {
+                "error": "Invalid request"
+            }
+        },400
+
+
+
 
 if __name__ == '__main__':
     initializeDatabase()
