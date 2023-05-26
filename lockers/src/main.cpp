@@ -65,5 +65,38 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("Locker ");
     lcd.print(key);
+    if (key == '1') {
+      digitalWrite(LOCKER_1A, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_1A, HIGH);
+    } else if (key == '2') {
+      digitalWrite(LOCKER_1B, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_1B, HIGH);
+    } else if (key == '3') {
+      digitalWrite(LOCKER_1C, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_1C, HIGH);
+    } else if (key == '4') {
+      digitalWrite(LOCKER_1D, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_1D, HIGH);
+    } else if (key == '5') {
+      digitalWrite(LOCKER_2A, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_2A, HIGH);
+    } else if (key == '6') {
+      digitalWrite(LOCKER_2B, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_2B, HIGH);
+    } else if (key == '7') {
+      digitalWrite(LOCKER_2C, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_2C, HIGH);
+    } else if (key == '8') {
+      digitalWrite(LOCKER_2D, LOW);
+      delay(1000);
+      digitalWrite(LOCKER_2D, HIGH);
+    }
   }
 }
