@@ -125,3 +125,34 @@ def getRoom(room_id):
               "error": "Invalid request"
             }
         ),400
+        
+
+@app.route('/api/rooms/reserve', methods=['POST'])
+def reserveRoom():
+    try:
+        content = json.loads(request.data)
+        if not checkToken(content['token'], False):
+            return json.dumps(
+                {
+                  "error": "Access denied"
+                }
+            ),401
+        
+        room_id = content['room_id']
+        user_id = content['user_id']
+        start_time = content['start_time']
+        end_time = content['end_time']
+        
+        executor("INSERT INTO reservations (room_id, user_id, start_time, end_time) VALUES (?, ?, ?, ?);", (room_id, user_id, start_time, end_time))
+        
+        return json.dumps(
+            {
+              "success": "Room reserved"
+            }
+        ),200
+    except:
+        return json.dumps(
+            {
+              "error": "Invalid request"
+            }
+        ),400

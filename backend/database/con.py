@@ -176,3 +176,4 @@ def fillSampleEquipmentData():
         INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');
     """)
+

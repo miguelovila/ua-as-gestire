@@ -63,7 +63,7 @@ def getEquipment(equipment_id):
         ),400
     
 @app.route('/api/equipments', methods=['GET'])
-def listEquipaents():
+def listEquipments():
     try:
         equipments = executor("SELECT * FROM equipments;")
         return json.dump(
@@ -76,4 +76,34 @@ def listEquipaents():
             {
                 "error": "Invalid request"
             } 
+        ),400
+        
+@app.route('/api/equipments/reserve', methods=['POST'])
+def reserveEquipment():
+    try:
+        content = json.loads(request.data)
+        if not checkToken(content['token'], False):
+            return json.dumps(
+                {
+                  "error": "Access denied"
+                }
+            ),401
+        
+        equipment_id = content['equipment_id']
+        user_id = content['user_id']
+        start_time = content['start_time']
+        end_time = content['end_time']
+        
+        executor("INSERT INTO reservations (equipment_id, user_id, start_time, end_time) VALUES (?, ?, ?, ?);", (equipment_id, user_id, start_time, end_time))
+        
+        return json.dumps(
+            {
+              "success": True
+            }
+        ), 200
+    except:
+        return json.dumps(
+            {
+              "error": "Invalid request"
+            }
         ),400
