@@ -128,7 +128,7 @@ class _RoomsState extends State<Rooms> {
                                               '${filteredRooms[index].computers}'),
                                         ],
                                       ),
-                                      SizedBox(width: 10),
+                                      const SizedBox(width: 10),
                                       Row(
                                         children: [
                                           const Icon(Icons.power),
@@ -137,7 +137,7 @@ class _RoomsState extends State<Rooms> {
                                               '${filteredRooms[index].powerOutlets}'),
                                         ],
                                       ),
-                                      SizedBox(width: 10),
+                                      const SizedBox(width: 10),
                                       Row(
                                         children: [
                                           const Icon(Icons.event_seat),
