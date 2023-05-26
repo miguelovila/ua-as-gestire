@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <Keypad.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
 // Relay pin definitions
 #define LOCKER_1A 13
@@ -20,11 +22,14 @@
 #define KB_GREEN 18
 #define KB_YELLOW 19
 
+// Keypad setup
 char keys[4][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
-
 byte pin_rows[4] = {KB_BLACK, KB_WHITE, KB_GRAY, KB_PURPLE};
 byte pin_column[3] = {KB_BLUE, KB_GREEN, KB_YELLOW};
 Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, 4, 3);
+
+// LCD setup
+LiquidCrystal_I2C lcd(0x27,20,4);
 
 void setup() {
   // Relay pin setup
@@ -44,7 +49,10 @@ void setup() {
   digitalWrite(LOCKER_2B, HIGH);
   digitalWrite(LOCKER_2C, HIGH);
   digitalWrite(LOCKER_2D, HIGH);
-  
+  // LCD setup
+  lcd.init();
+  lcd.backlight();
+  // Serial setup
   Serial.begin(9600);
 }
 
@@ -53,5 +61,9 @@ void loop() {
 
   if (key) {
     Serial.println(key);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Locker ");
+    lcd.print(key);
   }
 }
