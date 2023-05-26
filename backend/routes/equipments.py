@@ -72,23 +72,7 @@ def getEquipment(equipment_id):
               "error": "Invalid request"
             }
         ),400
-    
-@app.route('/api/equipments', methods=['GET'])
-def listEquipments():
-    try:
-        equipments = executor("SELECT * FROM equipments;")
-        return json.dump(
-            {
-                "equipments": equipments 
-            }
-        ),200
-    except:
-        return json.dumps(
-            {
-                "error": "Invalid request"
-            } 
-        ),400
-        
+
 @app.route('/api/equipments/reserve', methods=['POST'])
 def reserveEquipment():
     try:
