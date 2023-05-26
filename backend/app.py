@@ -24,7 +24,6 @@ if __name__ == '__main__':
 # import os
 # import sqlite3
 #
-#
 # def initializeDatabase():
 #     if not os.path.exists('database.db'):
 #         conn = sqlite3.connect('database.db')

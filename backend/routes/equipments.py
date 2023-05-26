@@ -2,6 +2,17 @@ import json
 from flask import request
 from __main__ import app, executor, checkToken
 
+# ======================== Filtering Results =======================
+# Equipments can be filtered by combinations of the following parameters:
+# - name
+# - description
+# - Locker
+# - Initial date
+# - Final date
+# If the parameter is not specified, it is not considered in the filter
+# for numeric parameters, the filter means "greater than or equal to"
+
+
 @app.route('/api/equipments', methods=['GET'])
 def listEquipments():
     try:
