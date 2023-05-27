@@ -177,3 +177,26 @@ def fillSampleEquipmentData():
         VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');
     """)
 
+def fillSampleReservesData():
+    if len(executor("SELECT * FROM reservations;")) > 0:
+        return
+    
+    executor("""   
+        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
+        VALUES (1, 1, 1614556800, 1614560400);
+    """)
+    
+    executor("""
+        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
+        VALUES (2, 1, 1614556800, 1614560400);
+    """)
+    
+    executor("""
+        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
+        VALUES (3, 1, 1614556800, 1614560400);
+    """)
+    
+    executor("""
+        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
+        VALUES (4, 1, 1614556800, 1614560400);
+    """)
