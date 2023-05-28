@@ -155,10 +155,22 @@ void loop()
             char key = keypad.getKey();
             if (key)
             {
-                if (key == '#' || key == '*')
+                if (key == '#')
                 {
                     state = S_ABORTED;
                     break;
+                }
+                else if (key == '*')
+                {
+                    // erase last digit
+                    if (i > 0)
+                    {
+                        i--;
+                        code[i] = '-';
+                        lcd.setCursor(5+i, 1);
+                        lcd.print(code[i]);
+                    }
+                    continue;
                 }
                 code[i] = key;
                 lcd.setCursor(5+i, 1);
@@ -183,7 +195,7 @@ void loop()
         {
             code[i] = '-';
         }
-        delay(2000);
+        delay(5000);
         state = S_IDLE;
     }
     break;
