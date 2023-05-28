@@ -11,7 +11,7 @@ def initializeDatabase():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
     cur.execute(
-      """
+    """
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY,
 				mec INTEGER NOT NULL,
@@ -23,7 +23,7 @@ def initializeDatabase():
 		"""
     )
     cur.execute(
-      """
+    """
 			CREATE TABLE IF NOT EXISTS tokens (
 				id INTEGER PRIMARY KEY,
 				token TEXT NOT NULL,
@@ -33,7 +33,7 @@ def initializeDatabase():
 		"""
     )
     cur.execute(
-      """
+    """
 			CREATE TABLE IF NOT EXISTS rooms (
 				id INTEGER PRIMARY KEY,
 				name TEXT NOT NULL,
@@ -53,19 +53,20 @@ def initializeDatabase():
 		"""
     )
     cur.execute(
-      """
+    """
 			CREATE TABLE IF NOT EXISTS equipments (
 				id INTEGER PRIMARY KEY,
 				name TEXT NOT NULL,
 				description TEXT NOT NULL,
 				reservations TEXT NOT NULL,
 				locker TEXT NOT NULL,
-				image TEXT NOT NULL
+				image TEXT NOT NULL,
+        available INTEGER NOT NULL
 			);
 		"""
     )
     cur.execute(
-      """
+    """
 			CREATE TABLE IF NOT EXISTS reservations (
 				id INTEGER PRIMARY KEY,
 				user_id INTEGER NOT NULL,
@@ -74,6 +75,19 @@ def initializeDatabase():
 				end_time INTEGER NOT NULL,
 				reason TEXT
 			);    
+		"""
+    )
+    cur.execute(
+    """
+			CREATE TABLE IF NOT EXISTS equipment_reservations (
+				id INTEGER PRIMARY KEY,
+				user_id INTEGER NOT NULL,
+				equipment_id INTEGER NOT NULL,
+				start_time INTEGER NOT NULL,
+				end_time INTEGER NOT NULL,
+				usage_place TEXT,
+        observation TEXT
+			);
 		"""
     )
     con.commit()
@@ -196,20 +210,26 @@ def fillSampleEquipmentData():
   if len(executor("SELECT * FROM equipments;")) > 0:
       return
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('Oscilloscope', 'Oscilloscope', '[]', '1A', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Oscilloscope', 'Oscilloscope', '[]', '1A', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('Arduino UNO', 'Development Board & Kit', '[]', '1B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Arduino UNO', 'Development Board & Kit', '[]', '1B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('Raspberry Pi 4B', 'Development Board & Kit', '[]', '1C', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 4B', 'Development Board & Kit', '[]', '1C', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('DETPIC', 'Development Board', '[]', '2A', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('DETPIC', 'Development Board', '[]', '2A', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image) VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
+  )
+  executor(	
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2C', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
+  )
+  executor(
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2D', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand', 1);"""
   )
