@@ -7,6 +7,7 @@ app = Flask(__name__)
 from routes.auth import *
 from routes.rooms import *
 from routes.equipments import *
+from routes.locker import *
 
 @app.route('/')
 def index():

@@ -47,14 +47,14 @@ codes = {}
 scheduler = sched.scheduler(time.time, time.sleep)
 
 def release_equipment(code, reservation_id):
-    if code in codes:
-      equipment_id = codes[code]["equipment_id"]
-      executor("UPDATE equipments SET available = 1 WHERE id = ?;", (equipment_id,))
-      executor("UPDATE equipment_reservations SET observation = 'User didn''t pick up the equipment' WHERE id = ?;", (reservation_id,))
-      del codes[code]
+  if code in codes:
+    equipment_id = codes[code]["equipment_id"]
+    executor("UPDATE equipments SET available = 1 WHERE id = ?;", (equipment_id,))
+    executor("UPDATE equipment_reservations SET observation = 'User didn''t pick up the equipment' WHERE id = ?;", (reservation_id,))
+    del codes[code]
 
 def run_scheduler():
-    scheduler.run()
+  scheduler.run()
 
 @app.route("/api/equipments/<int:equipment_id>/reserve", methods=["POST"])
 def reserveEquipment(equipment_id):
@@ -77,13 +77,48 @@ def reserveEquipment(equipment_id):
 				executor("UPDATE equipments SET available = 0 WHERE id = ?;", (equipment_id,))
 				code = random.randint(100000, 999999)
 				reservation_id = executor("SELECT id FROM equipment_reservations WHERE equipment_id = ? AND user_id = ? AND start_time = ? AND end_time = ?;", (equipment_id, user_id, start_time, end_time))[0][0]
-				codes[code] = {"expires": time.time() + 120, "equipment_id": equipment_id, "user_id": user_id}
+				codes[code] = {"expires": time.time() + 120, "equipment_id": equipment_id, "user_id": user_id, "type": "get"}
 				scheduler.enter(120, 1, release_equipment, argument=(code, reservation_id))
 				thread = threading.Thread(target=run_scheduler)
 				thread.start()
 				return json.dumps({"message": "Equipment reserved", "code": code}), 200
 			else:
 				return json.dumps({"error": "Equipment not available"}), 400
+		return json.dumps({"error": "Equipment not found"}), 400
+	except:
+		return json.dumps({"error": "Invalid request"}), 400
+
+def returnEquipmentCode(code):
+	try:
+		if code in codes:
+			del codes[code]
+	except:
+		pass
+
+@app.route("/api/equipments/<int:equipment_id>/return", methods=["POST"])
+def returnEquipment(equipment_id):
+	try:
+		content = json.loads(request.data)
+		if not checkToken(content["token"], False):
+			return json.dumps({"error": "Access denied"}), 401
+		user_id = executor("SELECT user_id FROM tokens WHERE token = ?;", (content['token'],))[0][0]
+
+		reservation = executor("SELECT * FROM equipment_reservations WHERE equipment_id = ? ORDER BY id DESC LIMIT 1;", (equipment_id,))
+		if len(reservation) > 0:
+			if user_id != reservation[0][1]:
+				return json.dumps({"error": "Access denied"}), 401
+
+		equipment = executor("SELECT * FROM equipments WHERE id = ?;", (equipment_id,))
+		if len(equipment) > 0:
+			if equipment[0][6] == 0:
+				code = random.randint(100000, 999999)
+				codes[code] = {"expires": time.time() + 120, "equipment_id": equipment_id, "user_id": user_id, "type": "put"}
+				scheduler.enter(120, 1, returnEquipmentCode, argument=(code))
+				thread = threading.Thread(target=run_scheduler)
+				thread.start()
+				return json.dumps({"message": "Equipment return code", "code": code}), 200
+			else:
+				return json.dumps({"error": "Equipment not available for return"}), 400
 		return json.dumps({"error": "Equipment not found"}), 400
 	except:
 		return json.dumps({"error": "Invalid request"}), 400
