@@ -8,6 +8,7 @@ from routes.auth import *
 from routes.rooms import *
 from routes.equipments import *
 from routes.locker import *
+from routes.users import *
 
 @app.route('/')
 def index():
