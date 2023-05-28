@@ -2,7 +2,7 @@
 #include "WiFi.h"
 #include <HTTPClient.h>
 #include <Keypad.h>
-#include <Wire.h> 
+#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
 // Relay pin definitions
@@ -25,8 +25,8 @@
 #define KB_YELLOW 19
 
 // WiFi configs
-const char* ssid = "gestire-demo";
-const char* password = "gestiregestire";
+const char *ssid = "gestire-demo";
+const char *password = "gestiregestire";
 IPAddress local_IP(192, 168, 0, 3);
 IPAddress gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
@@ -34,25 +34,27 @@ IPAddress primaryDNS(192, 168, 0, 1);
 IPAddress secondaryDNS(1, 1, 1, 1);
 
 // API configs
-const char* api_token = "secret1";
+const char *api_token = "secret1";
 
 // Keypad configs
 char keys[4][3] = {
-  {'1', '2', '3'},
-  {'4', '5', '6'},
-  {'7', '8', '9'},
-  {'*', '0', '#'}
-};
+    {'1', '2', '3'},
+    {'4', '5', '6'},
+    {'7', '8', '9'},
+    {'*', '0', '#'}};
 byte pin_rows[4] = {KB_BLACK, KB_WHITE, KB_GRAY, KB_PURPLE};
 byte pin_column[3] = {KB_BLUE, KB_GREEN, KB_YELLOW};
-Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, 4, 3);
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, 4, 3);
 
 // LCD configs
-LiquidCrystal_I2C lcd(0x27,20,4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // State machine
-enum State {
+enum State
+{
     S_IDLE,
+    S_INPUT,
+    S_ABORTED,
     S_PROCESSING,
     S_GET,
     S_PUT,
@@ -60,50 +62,149 @@ enum State {
 };
 State state = S_IDLE;
 
-void setup() {
-  delay(4000);Serial.begin(115200);
-  Serial.println("[INFO] Starting Locker System");
+void setup()
+{
+    delay(1000);
+    Serial.begin(115200);
+    Serial.println("[INFO] Starting Locker System");
 
-  Serial.println("[INFO] Setting up pins");
-  pinMode(LOCKER_1A, OUTPUT); digitalWrite(LOCKER_1A, HIGH);
-  pinMode(LOCKER_1B, OUTPUT); digitalWrite(LOCKER_1B, HIGH);
-  pinMode(LOCKER_1C, OUTPUT); digitalWrite(LOCKER_1C, HIGH);
-  pinMode(LOCKER_1D, OUTPUT); digitalWrite(LOCKER_1D, HIGH);
-  pinMode(LOCKER_2A, OUTPUT); digitalWrite(LOCKER_2A, HIGH);
-  pinMode(LOCKER_2B, OUTPUT); digitalWrite(LOCKER_2B, HIGH);
-  pinMode(LOCKER_2C, OUTPUT); digitalWrite(LOCKER_2C, HIGH);
-  pinMode(LOCKER_2D, OUTPUT); digitalWrite(LOCKER_2D, HIGH);
-  Serial.println("[INFO] Pins setup done");
+    Serial.println("[INFO] Setting up pins");
+    pinMode(LOCKER_1A, OUTPUT);
+    digitalWrite(LOCKER_1A, HIGH);
+    pinMode(LOCKER_1B, OUTPUT);
+    digitalWrite(LOCKER_1B, HIGH);
+    pinMode(LOCKER_1C, OUTPUT);
+    digitalWrite(LOCKER_1C, HIGH);
+    pinMode(LOCKER_1D, OUTPUT);
+    digitalWrite(LOCKER_1D, HIGH);
+    pinMode(LOCKER_2A, OUTPUT);
+    digitalWrite(LOCKER_2A, HIGH);
+    pinMode(LOCKER_2B, OUTPUT);
+    digitalWrite(LOCKER_2B, HIGH);
+    pinMode(LOCKER_2C, OUTPUT);
+    digitalWrite(LOCKER_2C, HIGH);
+    pinMode(LOCKER_2D, OUTPUT);
+    digitalWrite(LOCKER_2D, HIGH);
+    Serial.println("[INFO] Pins setup done");
 
-  Serial.println("[INFO] Setting up LCD");
-  lcd.init(); lcd.backlight();
-  Serial.println("[INFO] LCD setup done");
+    Serial.println("[INFO] Setting up LCD");
+    lcd.init();
+    lcd.backlight();
+    Serial.println("[INFO] LCD setup done");
 
-  Serial.println("[INFO] Setting up IP");
-  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-      Serial.println("[ERROR] Failed to configure IP");
-  }
-  
-  Serial.print("[INFO] Setting up WiFi");
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print("."); delay(500);
-  }
-  Serial.println("\n[INFO] WiFi connected");
+    Serial.println("[INFO] Setting up IP");
+    if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS))
+    {
+        Serial.println("[ERROR] Failed to configure IP");
+    }
 
-  Serial.print("[INFO] IP address: ");
-  Serial.println(WiFi.localIP());
+    Serial.print("[INFO] Setting up WiFi");
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.print(".");
+        delay(500);
+    }
+    Serial.println("\n[INFO] WiFi connected");
 
-  Serial.println("[INFO] Setup done");
+    Serial.print("[INFO] IP address: ");
+    Serial.println(WiFi.localIP());
+
+    Serial.println("[INFO] Setup done");
 }
 
-void loop() {
-  char key = keypad.getKey();
-  if (key) {
-    if (key == '1') {
-        Serial.println("[INFO] Sending GET request to API");
-        HTTPClient http;
+char code[6] = {'-', '-', '-', '-', '-', '-'};
+
+void loop()
+{
+    switch (state)
+    {
+    case S_IDLE:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(" Gestire Locker ");
+        lcd.setCursor(0, 1);
+        lcd.print(" Type your code ");
+        while (1)
+        {
+            char key = keypad.getKey();
+            if (key && key != '#' && key != '*')
+            {
+                code[0] = key;
+                state = S_INPUT;
+                break;
+            }
+        }
+    }
+    break;
+    case S_INPUT:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(" Type your code ");
+        lcd.setCursor(5, 1);
+        for (int i = 0; i < 6; i++)
+        {
+            lcd.print(code[i]);
+        }
+        int i = 1;
+        while (i < 6)
+        {
+            char key = keypad.getKey();
+            if (key)
+            {
+                if (key == '#' || key == '*')
+                {
+                    state = S_ABORTED;
+                    break;
+                }
+                code[i] = key;
+                lcd.setCursor(5+i, 1);
+                lcd.print(code[i]);
+                i++;
+            }
+        }
+        if (state != S_ABORTED)
+        {
+            state = S_PROCESSING;
+        }
+    }
+    break;
+    case S_ABORTED:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("   Operation    ");
+        lcd.setCursor(0, 1);
+        lcd.print("      aborted   ");
+        for (int i = 0; i < 6; i++)
+        {
+            code[i] = '-';
+        }
+        delay(2000);
+        state = S_IDLE;
+    }
+    break;
+    case S_PROCESSING:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("  Processing    ");
+        lcd.setCursor(0, 1);
+        lcd.print("     operation  ");
+        delay(5000);
+        state = S_ABORTED;
+    }
+    break;
+    default:
+        break;
+    }
+}
+
+/*
+    HTTPClient http;
     http.begin("http://192.168.0.100:5000");
     int httpCode = http.GET();
     if (httpCode > 0) {
@@ -115,6 +216,13 @@ void loop() {
       Serial.println("Error on HTTP request");
     }
     http.end();
+
+
+    char key = keypad.getKey();
+  if (key) {
+    if (key == '1') {
+        Serial.println("[INFO] Sending GET request to API");
+
     }
   }
-}
+*/
