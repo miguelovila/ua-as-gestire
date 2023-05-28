@@ -1,4 +1,5 @@
 import json
+import time
 from flask import request
 from __main__ import app, executor, checkToken
 
@@ -15,6 +16,7 @@ from __main__ import app, executor, checkToken
 # - sound system
 # - projector
 # - whiteboard
+# - available now
 #
 # If the parameter is not specified, it is not considered in the filter
 # for numeric parameters, the filter means "greater than or equal to"
@@ -37,6 +39,7 @@ def filterRooms():
         sound_system = content['sound_system'] if 'sound_system' in content and content['sound_system'] != '' else None
         projector = content['projector'] if 'projector' in content and content['projector'] != '' else None
         whiteboard = content['whiteboard'] if 'whiteboard' in content and content['whiteboard'] != '' else None
+        available_now = content['available_now'] if 'available_now' in content and content['available_now'] != '' else None
 
         query = "SELECT * FROM rooms WHERE "
         params = []
@@ -88,6 +91,10 @@ def filterRooms():
         query = query[:-5] + ";"
         rooms = executor(query, params)
 
+        if available_now is not None:
+            if bool(int(available_now)):
+                rooms = [room for room in rooms if checkRoomAvailability(room[0])]
+
         if len(rooms) > 0:
             return json.dumps({"rooms": rooms}), 200
 
@@ -127,8 +134,8 @@ def getRoom(room_id):
         ),400
         
 
-@app.route('/api/rooms/reserve', methods=['POST'])
-def reserveRoom():
+@app.route('/api/rooms/<int:room_id>/reserve', methods=['POST'])
+def reserveRoom(room_id):
     try:
         content = json.loads(request.data)
         if not checkToken(content['token'], False):
@@ -138,12 +145,26 @@ def reserveRoom():
                 }
             ),401
         
-        room_id = content['room_id']
-        user_id = content['user_id']
-        start_time = content['start_time']
-        end_time = content['end_time']
+        user_id = executor("SELECT user_id FROM tokens WHERE token = ?;", (content['token'],))[0][0]
+        start_time = int(content['start_time'])
+        end_time = start_time + int(content['duration'])
+        reason = content['reason'] if 'reason' in content else None
+
+        if start_time < 0 or end_time < 0 or end_time - start_time < 900:
+            return json.dumps(
+                {
+                  "error": "Invalid reservation time"
+                }
+            ),400
         
-        executor("INSERT INTO reservations (room_id, user_id, start_time, end_time) VALUES (?, ?, ?, ?);", (room_id, user_id, start_time, end_time))
+        if not checkRoomAvailability(room_id, start_time, end_time):
+            return json.dumps(
+                {
+                  "error": "Room not available"
+                }
+            ),400
+        
+        executor("INSERT INTO reservations (user_id, room_id, start_time, end_time, reason) VALUES (?, ?, ?, ?, ?);", (user_id, room_id, start_time, end_time, reason))
         
         return json.dumps(
             {
@@ -156,3 +177,13 @@ def reserveRoom():
               "error": "Invalid request"
             }
         ),400
+    
+def checkRoomAvailability(room_id, start_time = int(time.time()), end_time = int(time.time()) + 900):
+    try:
+        reservations = executor("SELECT * FROM reservations WHERE room_id = ? AND ((start_time <= ? AND end_time >= ?) OR (start_time <= ? AND end_time >= ?));", (room_id, start_time, start_time, end_time, end_time))
+        if len(reservations) > 0:
+            return False
+        return True
+    except:
+        return False
+    

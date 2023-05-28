@@ -56,6 +56,16 @@ def initializeDatabase():
                 image TEXT NOT NULL
             );
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS reservations (
+                id INTEGER PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                room_id INTEGER NOT NULL,
+                start_time INTEGER NOT NULL,
+                end_time INTEGER NOT NULL,
+                reason TEXT
+            );    
+        """)
         con.commit()
         con.close()
     except sqlite3.Error as error:
@@ -175,28 +185,4 @@ def fillSampleEquipmentData():
     executor("""
         INSERT INTO equipments (name, description, reservations, locker, image)
         VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://i.imgur.com/5ZQ8X6u_d.webp?fidelity=grand');
-    """)
-
-def fillSampleReservesData():
-    if len(executor("SELECT * FROM reservations;")) > 0:
-        return
-    
-    executor("""   
-        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
-        VALUES (1, 1, 1614556800, 1614560400);
-    """)
-    
-    executor("""
-        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
-        VALUES (2, 1, 1614556800, 1614560400);
-    """)
-    
-    executor("""
-        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
-        VALUES (3, 1, 1614556800, 1614560400);
-    """)
-    
-    executor("""
-        INSERT INTO reservations (equipment_id, user_id, start_time, end_time)
-        VALUES (4, 1, 1614556800, 1614560400);
     """)
