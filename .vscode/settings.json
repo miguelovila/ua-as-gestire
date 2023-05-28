@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "/home/miguelovila/Repositories/ua-as-gestire-project/client/gestire/linux",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none"
+}
