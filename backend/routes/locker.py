@@ -5,7 +5,7 @@ import json
 import time
 from routes.equipments import codes
 
-@app.route("/api/locker/<int:code>", methods=["GET"])
+@app.route("/api/locker/<int:code>", methods=["POST"])
 def getLocker(code):
 	try:
 		content = json.loads(request.data)
