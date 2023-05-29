@@ -4,6 +4,7 @@
 #include <Keypad.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <ArduinoJson.h>
 
 // Relay pin definitions
 #define LOCKER_1A 13
@@ -34,7 +35,8 @@ IPAddress primaryDNS(192, 168, 0, 1);
 IPAddress secondaryDNS(1, 1, 1, 1);
 
 // API configs
-const char *api_token = "secret1";
+const char *API_URL = "http://192.168.0.100:5000/api";
+const char *API_SECRET = "farto_da_papelada_de_analise_de_sistemas";
 
 // Keypad configs
 char keys[4][3] = {
@@ -56,11 +58,14 @@ enum State
     S_INPUT,
     S_ABORTED,
     S_PROCESSING,
+    S_INVALID,
     S_GET,
     S_PUT,
     S_ERROR
 };
 State state = S_IDLE;
+
+char *locker;
 
 void setup()
 {
@@ -114,7 +119,7 @@ void setup()
     Serial.println("[INFO] Setup done");
 }
 
-char code[6] = {'-', '-', '-', '-', '-', '-'};
+char code[7] = "------";
 
 void loop()
 {
@@ -127,6 +132,13 @@ void loop()
         lcd.print(" Gestire Locker ");
         lcd.setCursor(0, 1);
         lcd.print(" Type your code ");
+
+        for (int i = 0; i < 6; i++)
+        {
+            code[i] = '-';
+        }
+        delete[] locker;
+
         while (1)
         {
             char key = keypad.getKey();
@@ -162,18 +174,17 @@ void loop()
                 }
                 else if (key == '*')
                 {
-                    // erase last digit
                     if (i > 0)
                     {
                         i--;
                         code[i] = '-';
-                        lcd.setCursor(5+i, 1);
+                        lcd.setCursor(5 + i, 1);
                         lcd.print(code[i]);
                     }
                     continue;
                 }
                 code[i] = key;
-                lcd.setCursor(5+i, 1);
+                lcd.setCursor(5 + i, 1);
                 lcd.print(code[i]);
                 i++;
             }
@@ -191,10 +202,6 @@ void loop()
         lcd.print("   Operation    ");
         lcd.setCursor(0, 1);
         lcd.print("      aborted   ");
-        for (int i = 0; i < 6; i++)
-        {
-            code[i] = '-';
-        }
         delay(5000);
         state = S_IDLE;
     }
@@ -206,35 +213,113 @@ void loop()
         lcd.print("  Processing    ");
         lcd.setCursor(0, 1);
         lcd.print("     operation  ");
-        delay(5000);
-        state = S_ABORTED;
+
+        // Send post request to API with a JSON containing the api secret
+        HTTPClient http;
+        char url[50];
+        snprintf(url, sizeof(url), "%s/locker/%s", API_URL, code);
+
+        const size_t capacity = JSON_OBJECT_SIZE(1) + 30;
+        DynamicJsonDocument jsonDoc(capacity);
+        jsonDoc["token"] = API_SECRET;
+
+        String jsonPayload;
+        serializeJson(jsonDoc, jsonPayload);
+
+        http.begin(url);
+        http.addHeader("Content-Type", "application/json");
+        int httpResponseCode = http.POST(jsonPayload);
+
+        if (httpResponseCode > 0)
+        {
+            String payload = http.getString();
+            Serial.println(httpResponseCode);
+            Serial.println(payload);
+            if (httpResponseCode == 400)
+            {
+                state = S_INVALID;
+            }
+            else if (httpResponseCode == 200)
+            {
+                const size_t capacity = JSON_OBJECT_SIZE(2) + 30;
+                DynamicJsonDocument jsonDoc(capacity);
+                deserializeJson(jsonDoc, payload);
+                const char *type = jsonDoc["type"];
+                const char *lockerValue = jsonDoc["locker"];
+                locker = new char[strlen(lockerValue) + 1];
+                strcpy(locker, lockerValue);
+                if (strcmp(type, "put") == 0)
+                {
+                    state = S_PUT;
+                }
+                else if (strcmp(type, "get") == 0)
+                {
+                    state = S_GET;
+                }
+                else
+                {
+                    state = S_ERROR;
+                }
+            }
+            else
+            {
+                state = S_ERROR;
+            }
+        }
+        else
+        {
+            Serial.println("Error on HTTP request");
+            state = S_ERROR;
+        }
+        delay(2000);
     }
     break;
+    case S_PUT:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("  Return it to  ");
+        lcd.setCursor(0, 1);
+        lcd.print("       ");
+        lcd.print(locker);
+        delay(10000);
+        state = S_IDLE;
+    }
+    break;
+    case S_GET:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("  Take it from  ");
+        lcd.setCursor(0, 1);
+        lcd.print("       ");
+        lcd.print(locker);
+        delay(10000);
+        state = S_IDLE;
+    }
+    break;
+    case S_ERROR:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("   Operation    ");
+        lcd.setCursor(0, 1);
+        lcd.print("       failed   ");
+        delay(3000);
+        state = S_IDLE;
+    }
+    break;
+    case S_INVALID:
+    {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("    Invalid     ");
+        lcd.setCursor(0, 1);
+        lcd.print("        code    ");
+        delay(3000);
+        state = S_IDLE;
+    }
     default:
         break;
     }
 }
-
-/*
-    HTTPClient http;
-    http.begin("http://192.168.0.100:5000");
-    int httpCode = http.GET();
-    if (httpCode > 0) {
-        String payload = http.getString();
-        Serial.println(httpCode);
-        Serial.println(payload);
-      }
-    else {
-      Serial.println("Error on HTTP request");
-    }
-    http.end();
-
-
-    char key = keypad.getKey();
-  if (key) {
-    if (key == '1') {
-        Serial.println("[INFO] Sending GET request to API");
-
-    }
-  }
-*/
