@@ -121,6 +121,50 @@ void setup()
 
 char code[7] = "------";
 
+void open_close_locker(const char *locker, int opn)
+{
+    int lockerPin = 0;
+
+    if (strcmp(locker, "1A") == 0)
+    {
+        lockerPin = LOCKER_1A;
+    }
+    else if (strcmp(locker, "1B") == 0)
+    {
+        lockerPin = LOCKER_1B;
+    }
+    else if (strcmp(locker, "1C") == 0)
+    {
+        lockerPin = LOCKER_1C;
+    }
+    else if (strcmp(locker, "1D") == 0)
+    {
+        lockerPin = LOCKER_1D;
+    }
+    else if (strcmp(locker, "2A") == 0)
+    {
+        lockerPin = LOCKER_2A;
+    }
+    else if (strcmp(locker, "2B") == 0)
+    {
+        lockerPin = LOCKER_2B;
+    }
+    else if (strcmp(locker, "2C") == 0)
+    {
+        lockerPin = LOCKER_2C;
+    }
+    else if (strcmp(locker, "2D") == 0)
+    {
+        lockerPin = LOCKER_2D;
+    }
+    else
+    {
+        return;
+    }
+
+    digitalWrite(lockerPin, !opn);
+}
+
 void loop()
 {
     switch (state)
@@ -282,7 +326,9 @@ void loop()
         lcd.setCursor(0, 1);
         lcd.print("       ");
         lcd.print(locker);
+        open_close_locker(locker, 1);
         delay(10000);
+        open_close_locker(locker, 0);
         state = S_IDLE;
     }
     break;
@@ -294,7 +340,9 @@ void loop()
         lcd.setCursor(0, 1);
         lcd.print("       ");
         lcd.print(locker);
+        open_close_locker(locker, 1);
         delay(10000);
+        open_close_locker(locker, 0);
         state = S_IDLE;
     }
     break;
