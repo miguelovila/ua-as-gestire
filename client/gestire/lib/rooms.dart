@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'login.dart';
 
 class Rooms extends StatefulWidget {
   const Rooms({Key? key}) : super(key: key);
@@ -60,6 +61,12 @@ class _RoomsState extends State<Rooms> {
           // Handle invalid response format
           print('Invalid response format. Missing "rooms" key.');
         }
+      } else if (response.statusCode == 401) {
+        // Go to login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Login()),
+        );
       } else {
         // Handle API error or invalid response
         print('Failed to fetch rooms. Status code: ${response.statusCode}');
@@ -143,73 +150,84 @@ class _RoomsState extends State<Rooms> {
                           ),
                           itemCount: filteredRooms.length,
                           itemBuilder: (context, index) {
-                            return Card(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: maxCardHeight,
-                                      child: AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: Image.network(
-                                          filteredRooms[index].image,
-                                          fit: BoxFit.cover,
+                            return GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => RoomDetailsDialog(
+                                    room: filteredRooms[index],
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: maxCardHeight,
+                                        child: AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: Image.network(
+                                            filteredRooms[index].image,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: ListTile(
-                                      title: Text(
-                                        '${filteredRooms[index].name}\n${filteredRooms[index].description}',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      subtitle: Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 5.0,
-                                          bottom: 1.0,
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: ListTile(
+                                        title: Text(
+                                          '${filteredRooms[index].name}\n${filteredRooms[index].description}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.computer),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  '${filteredRooms[index].computers}',
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.power),
-                                                const SizedBox(width: 0),
-                                                Text(
-                                                  '${filteredRooms[index].powerOutlets}',
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.event_seat),
-                                                const SizedBox(width: 3),
-                                                Text(
-                                                  '${filteredRooms[index].seats}',
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                        subtitle: Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 5.0,
+                                            bottom: 1.0,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.computer),
+                                                  const SizedBox(width: 5),
+                                                  Text(
+                                                    '${filteredRooms[index].computers}',
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.power),
+                                                  const SizedBox(width: 0),
+                                                  Text(
+                                                    '${filteredRooms[index].powerOutlets}',
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.event_seat),
+                                                  const SizedBox(width: 3),
+                                                  Text(
+                                                    '${filteredRooms[index].seats}',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -270,6 +288,200 @@ class Room {
       soundSystem: json[10],
       projector: json[11],
       whiteboard: json[12],
+    );
+  }
+}
+
+class RoomDetailsDialog extends StatelessWidget {
+  final Room room;
+
+  const RoomDetailsDialog({required this.room});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 16.0),
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 500.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Reservation',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Divider(),
+              ),
+              SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Details',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: DataTable(
+                    columnSpacing: 16.0,
+                    dataRowMinHeight: 3.0,
+                    columns: [
+                      DataColumn(
+                          label: Expanded(
+                        child: Center(
+                            child: Text(
+                          'Property',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                      )),
+                      DataColumn(
+                          label: Expanded(
+                        child: Center(
+                            child: Text(
+                          'Value',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                      )),
+                    ],
+                    rows: [
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Name')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.name)),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Description')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.description)),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Seats')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.seats.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Power Outlets')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.powerOutlets.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Computers')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.computers.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Oscilloscopes')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.oscilloscopes.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Signal Generators')),
+                          ),
+                          DataCell(
+                            Center(
+                                child: Text(room.signalGenerators.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Multimeters')),
+                          ),
+                          DataCell(
+                            Center(child: Text(room.multimeters.toString())),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Sound System')),
+                          ),
+                          DataCell(
+                            Center(
+                                child:
+                                    Text(room.soundSystem == 1 ? 'Yes' : 'No')),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Projector')),
+                          ),
+                          DataCell(
+                            Center(
+                                child:
+                                    Text(room.projector == 1 ? 'Yes' : 'No')),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text('Whiteboard')),
+                          ),
+                          DataCell(
+                            Center(
+                                child:
+                                    Text(room.whiteboard == 1 ? 'Yes' : 'No')),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
