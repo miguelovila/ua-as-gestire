@@ -257,6 +257,8 @@ class _AccountDialogState extends State<AccountDialog> {
     });
   }
 
+  Future<void> signOut(BuildContext context) async {}
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -319,13 +321,14 @@ class _AccountDialogState extends State<AccountDialog> {
                                 TextButton(
                                   onPressed: () async {
                                     await sharedPreferences.clear();
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            const Login(),
-                                      ),
-                                    );
+                                    if (context.mounted)
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              const Login(),
+                                        ),
+                                      );
                                   },
                                   child: const Text('Sign out'),
                                 ),
