@@ -66,7 +66,7 @@ def reserveEquipment(equipment_id):
 		equipment = executor("SELECT * FROM equipments WHERE id = ?;", (equipment_id,))
 		if len(equipment) > 0:
 			if equipment[0][6] == 1:
-				start_time = int(content['start_time'])
+				start_time = int(time.time())
 				end_time = start_time + int(content['duration'])
 				usage_place = content['usage_place'] if 'usage_place' in content else None
 				
