@@ -103,6 +103,7 @@ def getRoom(room_id):
 def reserveRoom(room_id):
 	try:
 		content = json.loads(request.data)
+		print(content)
 		if not checkToken(content['token'], False):
 			return json.dumps(
 				{
@@ -132,7 +133,8 @@ def reserveRoom(room_id):
 				"success": "Room reserved"
 			}
 		), 200
-	except:
+	except Exception as e:
+		print(e)
 		return json.dumps(
 			{
 				"error": "Invalid request"

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
+import 'room_reservation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login.dart';
@@ -479,6 +480,7 @@ class RoomCard extends StatelessWidget {
 }
 
 class Room {
+  final int id;
   final String name;
   final String description;
   final String image;
@@ -493,6 +495,7 @@ class Room {
   final int whiteboard;
 
   Room({
+    required this.id,
     required this.name,
     required this.description,
     required this.image,
@@ -509,6 +512,7 @@ class Room {
 
   factory Room.fromJson(dynamic json) {
     return Room(
+      id: json[0],
       name: json[1],
       description: json[2],
       image: json[3],
@@ -548,11 +552,23 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Reservation',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                child: Column(
+                  children: [
+                    Text(
+                      'Reservation',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16.0),
+                    RoomReservationForm(
+                      roomId: widget.room.id,
+                      onSuccess: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -589,6 +605,9 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                 ),
               ),
               AnimatedCrossFade(
+                crossFadeState: _isExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 300),
                 firstChild: const SizedBox(),
                 secondChild: Padding(
@@ -640,10 +659,11 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                             ),
                             DataCell(
                               Center(
-                                  child: Text(
-                                widget.room.description,
-                                textAlign: TextAlign.center,
-                              )),
+                                child: Text(
+                                  widget.room.description,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -661,10 +681,11 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                           cells: [
                             const DataCell(
                               Center(
-                                  child: Text(
-                                'Power Outlets',
-                                textAlign: TextAlign.center,
-                              )),
+                                child: Text(
+                                  'Power Outlets',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                             DataCell(
                               Center(
@@ -701,10 +722,11 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                           cells: [
                             const DataCell(
                               Center(
-                                  child: Text(
-                                'Signal Generators',
-                                textAlign: TextAlign.center,
-                              )),
+                                child: Text(
+                                  'Signal Generators',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                             DataCell(
                               Center(
@@ -729,10 +751,11 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                           cells: [
                             const DataCell(
                               Center(
-                                  child: Text(
-                                'Sound System',
-                                textAlign: TextAlign.center,
-                              )),
+                                child: Text(
+                                  'Sound System',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                             DataCell(
                               Center(
@@ -772,9 +795,6 @@ class _RoomDetailsDialogState extends State<RoomDetailsDialog> {
                     ),
                   ),
                 ),
-                crossFadeState: _isExpanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
               ),
               const SizedBox(height: 16.0),
             ],
