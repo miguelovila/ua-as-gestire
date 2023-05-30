@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gestire/login.dart';
 import 'package:gestire/rooms.dart';
 import 'package:gestire/equipments.dart';
 import 'package:gestire/records.dart';
-import 'package:gestire/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 extension StringCasingExtension on String {
@@ -41,7 +41,7 @@ class _DashboardState extends State<Dashboard> {
             body: Row(
               children: [
                 NavigationRail(
-                  extended: true, // Set extended to true
+                  extended: true,
                   selectedIndex: currentPage,
                   onDestinationSelected: (int index) {
                     if (index == destinations.length - 1) {
@@ -260,13 +260,13 @@ class _AccountDialogState extends State<AccountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: EdgeInsets.zero,
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 25.0, horizontal: 25.0),
       content: isLoading
           ? const CircularProgressIndicator()
           : Builder(
               builder: (BuildContext context) {
                 final String? name = sharedPreferences.getString('name');
-                final int? mec = sharedPreferences.getInt('mec');
                 final String? email = sharedPreferences.getString('email');
                 final String? profilePicture =
                     sharedPreferences.getString('profile_picture');
@@ -274,78 +274,66 @@ class _AccountDialogState extends State<AccountDialog> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 25.0, bottom: 16.0, left: 25.0, right: 25.0),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: profilePicture != null
-                            ? NetworkImage(profilePicture)
-                            : null,
-                        child: profilePicture == null
-                            ? const Icon(Icons.person)
-                            : null,
-                      ),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: profilePicture != null
+                          ? NetworkImage(profilePicture)
+                          : null,
+                      child: profilePicture == null
+                          ? const Icon(Icons.person)
+                          : null,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 8.0, left: 25.0, right: 25.0, top: 10),
-                      child: Text(
-                        name.toString().toTitleCase(),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
+                    const SizedBox(height: 16.0),
+                    Text(
+                      name.toString().toTitleCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 8.0, left: 25.0, right: 25.0),
-                      child: Text(
-                        email ?? 'N/A',
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      email ?? 'N/A',
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 25.0, top: 20.0, left: 25.0, right: 25.0),
-                      child: FilledButton(
-                          child: const Padding(
-                            padding: EdgeInsets.all(14.0),
-                            child: Text('Sign out'),
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Sign out'),
-                                  content: const Text(
-                                      'Are you sure you want to sign out?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        await sharedPreferences.clear();
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                const Login(),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('Sign out'),
-                                    ),
-                                  ],
-                                );
-                              },
+                    const SizedBox(height: 20.0),
+                    FilledButton(
+                      child: const Padding(
+                        padding: EdgeInsets.all(14.0),
+                        child: Text('Sign out'),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Sign out'),
+                              content: const Text(
+                                  'Are you sure you want to sign out?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await sharedPreferences.clear();
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const Login(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Sign out'),
+                                ),
+                              ],
                             );
-                          }),
+                          },
+                        );
+                      },
                     ),
                   ],
                 );
