@@ -113,133 +113,182 @@ class _RoomsState extends State<Rooms> {
           child: SafeArea(
             child: Column(
               children: [
-                Container(
-                  width: gridWidthLimit, // Limit the width of the search bar
-                  child: TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search',
-                      contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                      ),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.filter_alt),
-                          SizedBox(width: 15),
-                          Icon(Icons.qr_code),
-                          SizedBox(width: 25),
-                        ],
-                      ),
-                    ),
-                  ),
+                SearchBar(
+                  searchController: searchController,
+                  gridWidthLimit: gridWidthLimit,
                 ),
                 const SizedBox(height: 20.0),
                 Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Container(
-                        width: gridWidthLimit, // Limit the width of the grid
-                        child: GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cardsPerRow,
-                            crossAxisSpacing: 10.0,
-                            mainAxisSpacing: 10.0,
-                          ),
-                          itemCount: filteredRooms.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => RoomDetailsDialog(
-                                    room: filteredRooms[index],
-                                  ),
-                                );
-                              },
-                              child: Card(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      child: SizedBox(
-                                        height: maxCardHeight,
-                                        child: AspectRatio(
-                                          aspectRatio: 16 / 9,
-                                          child: Image.network(
-                                            filteredRooms[index].image,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: ListTile(
-                                        title: Text(
-                                          '${filteredRooms[index].name}\n${filteredRooms[index].description}',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        subtitle: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 5.0,
-                                            bottom: 1.0,
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.computer),
-                                                  const SizedBox(width: 5),
-                                                  Text(
-                                                    '${filteredRooms[index].computers}',
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.power),
-                                                  const SizedBox(width: 0),
-                                                  Text(
-                                                    '${filteredRooms[index].powerOutlets}',
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.event_seat),
-                                                  const SizedBox(width: 3),
-                                                  Text(
-                                                    '${filteredRooms[index].seats}',
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
+                  child: RoomGrid(
+                    gridWidthLimit: gridWidthLimit,
+                    cardsPerRow: cardsPerRow,
+                    filteredRooms: filteredRooms,
+                    maxCardHeight: maxCardHeight,
                   ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class SearchBar extends StatelessWidget {
+  final TextEditingController searchController;
+  final double gridWidthLimit;
+
+  const SearchBar({
+    required this.searchController,
+    required this.gridWidthLimit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: gridWidthLimit, // Limit the width of the search bar
+      child: TextField(
+        controller: searchController,
+        decoration: const InputDecoration(
+          hintText: 'Search',
+          contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(100.0)),
+          ),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.filter_alt),
+              SizedBox(width: 15),
+              Icon(Icons.qr_code),
+              SizedBox(width: 25),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RoomGrid extends StatelessWidget {
+  final double gridWidthLimit;
+  final int cardsPerRow;
+  final List<Room> filteredRooms;
+  final double maxCardHeight;
+
+  const RoomGrid({
+    required this.gridWidthLimit,
+    required this.cardsPerRow,
+    required this.filteredRooms,
+    required this.maxCardHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          width: gridWidthLimit, // Limit the width of the grid
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: cardsPerRow,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+            ),
+            itemCount: filteredRooms.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => RoomDetailsDialog(
+                      room: filteredRooms[index],
+                    ),
+                  );
+                },
+                child: RoomCard(
+                  room: filteredRooms[index],
+                  maxCardHeight: maxCardHeight,
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class RoomCard extends StatelessWidget {
+  final Room room;
+  final double maxCardHeight;
+
+  const RoomCard({
+    required this.room,
+    required this.maxCardHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: maxCardHeight,
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  room.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ListTile(
+              title: Text(
+                '${room.name}\n${room.description}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 5.0, bottom: 1.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.computer),
+                        const SizedBox(width: 5),
+                        Text('${room.computers}'),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Row(
+                      children: [
+                        const Icon(Icons.power),
+                        const SizedBox(width: 0),
+                        Text('${room.powerOutlets}'),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Row(
+                      children: [
+                        const Icon(Icons.event_seat),
+                        const SizedBox(width: 3),
+                        Text('${room.seats}'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
