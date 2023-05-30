@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'constants.dart';
 import 'login.dart';
 
 class Rooms extends StatefulWidget {
@@ -16,6 +17,10 @@ class _RoomsState extends State<Rooms> {
   List<Room> rooms = [];
   List<Room> filteredRooms = [];
   TextEditingController searchController = TextEditingController();
+
+  int cardsPerRow = 1;
+  double gridWidthLimit = 900.0;
+  double maxCardHeight = 0.0;
 
   @override
   void initState() {
@@ -88,23 +93,138 @@ class _RoomsState extends State<Rooms> {
     });
   }
 
+  Widget _buildSearchBar() {
+    return SizedBox(
+      width: gridWidthLimit, // Limit the width of the search bar
+      child: TextField(
+        controller: searchController,
+        decoration: const InputDecoration(
+          hintText: 'Search',
+          contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(100.0)),
+          ),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.filter_alt),
+              SizedBox(width: 15),
+              Icon(Icons.qr_code),
+              SizedBox(width: 25),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoomCard(Room room) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => RoomDetailsDialog(room: room),
+        );
+      },
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: maxCardHeight,
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.network(
+                    room.image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                title: Text(
+                  '${room.name}\n${room.description}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 5.0, bottom: 1.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.computer),
+                          const SizedBox(width: 5),
+                          Text('${room.computers}'),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.power),
+                          const SizedBox(width: 0),
+                          Text('${room.powerOutlets}'),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.event_seat),
+                          const SizedBox(width: 3),
+                          Text('${room.seats}'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridView() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: gridWidthLimit, // Limit the width of the grid
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: cardsPerRow,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+            ),
+            itemCount: filteredRooms.length,
+            itemBuilder: (context, index) {
+              return _buildRoomCard(filteredRooms[index]);
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    int cardsPerRow = 1;
     if (MediaQuery.of(context).size.width > 900) {
       cardsPerRow = 3;
     } else if (MediaQuery.of(context).size.width > 500) {
       cardsPerRow = 2;
     }
 
-    double gridWidthLimit = 900.0;
     if (MediaQuery.of(context).size.width > 1000) {
       gridWidthLimit = 1200.0;
     } else if (MediaQuery.of(context).size.width > 800) {
       gridWidthLimit = 900.0;
     }
 
-    double maxCardHeight = MediaQuery.of(context).size.height / 3;
+    maxCardHeight = MediaQuery.of(context).size.height / 3;
 
     return Scaffold(
       body: Center(
@@ -113,128 +233,10 @@ class _RoomsState extends State<Rooms> {
           child: SafeArea(
             child: Column(
               children: [
-                Container(
-                  width: gridWidthLimit, // Limit the width of the search bar
-                  child: TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Search',
-                      contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                      ),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.filter_alt),
-                          SizedBox(width: 15),
-                          Icon(Icons.qr_code),
-                          SizedBox(width: 25),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                _buildSearchBar(),
                 const SizedBox(height: 20.0),
                 Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Container(
-                        width: gridWidthLimit, // Limit the width of the grid
-                        child: GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cardsPerRow,
-                            crossAxisSpacing: 10.0,
-                            mainAxisSpacing: 10.0,
-                          ),
-                          itemCount: filteredRooms.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => RoomDetailsDialog(
-                                    room: filteredRooms[index],
-                                  ),
-                                );
-                              },
-                              child: Card(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      child: SizedBox(
-                                        height: maxCardHeight,
-                                        child: AspectRatio(
-                                          aspectRatio: 16 / 9,
-                                          child: Image.network(
-                                            filteredRooms[index].image,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: ListTile(
-                                        title: Text(
-                                          '${filteredRooms[index].name}\n${filteredRooms[index].description}',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        subtitle: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 5.0,
-                                            bottom: 1.0,
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.computer),
-                                                  const SizedBox(width: 5),
-                                                  Text(
-                                                    '${filteredRooms[index].computers}',
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.power),
-                                                  const SizedBox(width: 0),
-                                                  Text(
-                                                    '${filteredRooms[index].powerOutlets}',
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.event_seat),
-                                                  const SizedBox(width: 3),
-                                                  Text(
-                                                    '${filteredRooms[index].seats}',
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  child: _buildGridView(),
                 ),
               ],
             ),
@@ -295,34 +297,34 @@ class Room {
 class RoomDetailsDialog extends StatelessWidget {
   final Room room;
 
-  const RoomDetailsDialog({required this.room});
+  const RoomDetailsDialog({Key? key, required this.room}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 16.0),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SingleChildScrollView(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 500.0),
+          constraints: const BoxConstraints(maxWidth: 500.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Text(
                   'Reservation',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 16.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              const SizedBox(height: 16.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Divider(),
               ),
-              SizedBox(height: 16.0),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+              const SizedBox(height: 16.0),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Text(
                   'Details',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -335,30 +337,34 @@ class RoomDetailsDialog extends StatelessWidget {
                   child: DataTable(
                     columnSpacing: 16.0,
                     dataRowMinHeight: 3.0,
-                    columns: [
+                    columns: const [
                       DataColumn(
-                          label: Expanded(
-                        child: Center(
+                        label: Expanded(
+                          child: Center(
                             child: Text(
-                          'Property',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                      )),
+                              'Property',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
                       DataColumn(
-                          label: Expanded(
-                        child: Center(
+                        label: Expanded(
+                          child: Center(
                             child: Text(
-                          'Value',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                      )),
+                              'Value',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                     rows: [
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Name')),
                           ),
                           DataCell(
@@ -368,7 +374,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Description')),
                           ),
                           DataCell(
@@ -378,7 +384,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Seats')),
                           ),
                           DataCell(
@@ -388,7 +394,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Power Outlets')),
                           ),
                           DataCell(
@@ -398,7 +404,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Computers')),
                           ),
                           DataCell(
@@ -408,7 +414,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Oscilloscopes')),
                           ),
                           DataCell(
@@ -418,7 +424,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Signal Generators')),
                           ),
                           DataCell(
@@ -429,7 +435,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Multimeters')),
                           ),
                           DataCell(
@@ -439,7 +445,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Sound System')),
                           ),
                           DataCell(
@@ -451,7 +457,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Projector')),
                           ),
                           DataCell(
@@ -463,7 +469,7 @@ class RoomDetailsDialog extends StatelessWidget {
                       ),
                       DataRow(
                         cells: [
-                          DataCell(
+                          const DataCell(
                             Center(child: Text('Whiteboard')),
                           ),
                           DataCell(
@@ -477,7 +483,7 @@ class RoomDetailsDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
             ],
           ),
         ),
