@@ -16,17 +16,25 @@ class _RoomsState extends State<Rooms> {
   List<Room> rooms = [];
   List<Room> filteredRooms = [];
   TextEditingController searchController = TextEditingController();
+  TextEditingController minSeatsController = TextEditingController();
+  TextEditingController minPowerSocketsController = TextEditingController();
+  TextEditingController typeController = TextEditingController();
+  TextEditingController availableNowController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchRooms(); // Fetch rooms when the widget initializes
+    fetchRooms({}); // Fetch rooms when the widget initializes
     searchController.addListener(filterRooms);
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    minSeatsController.dispose();
+    minPowerSocketsController.dispose();
+    typeController.dispose();
+    availableNowController.dispose();
     super.dispose();
   }
 
@@ -36,20 +44,29 @@ class _RoomsState extends State<Rooms> {
     return token;
   }
 
-  void fetchRooms() async {
+  void fetchRooms(Map<String, dynamic> filters) async {
     String token = await getToken();
     try {
       var url = Uri.parse(API_ROOMS_URL);
+      var body = {
+        "token": token,
+        "filters": filters,
+      };
+
+      // Remove the empty filter values from the request body
+      (body['filters'] as Map<String, dynamic>?)
+          ?.removeWhere((key, value) => value == '');
+
       var response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"token": token}),
+        body: jsonEncode(body),
       );
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        print(data);
         if (data.containsKey("rooms")) {
-          // Check if "rooms" key exists
           List<dynamic> roomData = data["rooms"];
 
           setState(() {
@@ -58,21 +75,24 @@ class _RoomsState extends State<Rooms> {
             filteredRooms = rooms;
           });
         } else {
-          // Handle invalid response format
-          print('Invalid response format. Missing "rooms" key.');
+          setState(() {
+            filteredRooms = [];
+          });
         }
       } else if (response.statusCode == 401) {
-        // Go to login
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Login()),
         );
       } else {
-        // Handle API error or invalid response
-        print('Failed to fetch rooms. Status code: ${response.statusCode}');
+        setState(() {
+          filteredRooms = [];
+        });
       }
     } catch (e) {
-      // Handle network or other errors
+      setState(() {
+        filteredRooms = [];
+      });
       print('Error fetching rooms: $e');
     }
   }
@@ -86,6 +106,18 @@ class _RoomsState extends State<Rooms> {
         return roomName.contains(query) || roomDescription.contains(query);
       }).toList();
     });
+  }
+
+  void applyFilters() {
+    String type = typeController.text;
+    Map<String, dynamic> filters = {
+      'minSeats': int.tryParse(minSeatsController.text),
+      'minPowerSockets': int.tryParse(minPowerSocketsController.text),
+      'type': type.isNotEmpty ? type : null,
+      'availableNow': availableNowController.text == 'true',
+    };
+
+    fetchRooms(filters);
   }
 
   @override
@@ -116,6 +148,11 @@ class _RoomsState extends State<Rooms> {
                 SearchBar(
                   searchController: searchController,
                   gridWidthLimit: gridWidthLimit,
+                  onApplyFilters: applyFilters,
+                  minSeatsController: minSeatsController,
+                  minPowerSocketsController: minPowerSocketsController,
+                  typeController: typeController,
+                  availableNowController: availableNowController,
                 ),
                 const SizedBox(height: 20.0),
                 Expanded(
@@ -138,10 +175,20 @@ class _RoomsState extends State<Rooms> {
 class SearchBar extends StatelessWidget {
   final TextEditingController searchController;
   final double gridWidthLimit;
+  final Function()? onApplyFilters;
+  final TextEditingController minSeatsController;
+  final TextEditingController minPowerSocketsController;
+  final TextEditingController typeController;
+  final TextEditingController availableNowController;
 
   const SearchBar({
     required this.searchController,
     required this.gridWidthLimit,
+    this.onApplyFilters,
+    required this.minSeatsController,
+    required this.minPowerSocketsController,
+    required this.typeController,
+    required this.availableNowController,
   });
 
   @override
@@ -150,16 +197,22 @@ class SearchBar extends StatelessWidget {
       width: gridWidthLimit, // Limit the width of the search bar
       child: TextField(
         controller: searchController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Search',
-          contentPadding: EdgeInsets.only(left: 30.0, right: 35.0),
-          border: OutlineInputBorder(
+          contentPadding: const EdgeInsets.only(left: 30.0, right: 35.0),
+          border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(100.0)),
           ),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.filter_alt),
+              FilterIcon(
+                onApplyFilters: onApplyFilters,
+                minSeatsController: minSeatsController,
+                minPowerSocketsController: minPowerSocketsController,
+                typeController: typeController,
+                availableNowController: availableNowController,
+              ),
               SizedBox(width: 15),
               Icon(Icons.qr_code),
               SizedBox(width: 25),
@@ -167,6 +220,137 @@ class SearchBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class FilterIcon extends StatefulWidget {
+  final Function()? onApplyFilters;
+  final TextEditingController minSeatsController;
+  final TextEditingController minPowerSocketsController;
+  final TextEditingController typeController;
+  final TextEditingController availableNowController;
+
+  const FilterIcon({
+    this.onApplyFilters,
+    required this.minSeatsController,
+    required this.minPowerSocketsController,
+    required this.typeController,
+    required this.availableNowController,
+  });
+
+  @override
+  _FilterIconState createState() => _FilterIconState();
+}
+
+class _FilterIconState extends State<FilterIcon> {
+  bool isAvailableNow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isAvailableNow = widget.availableNowController.text == 'true';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.filter_alt),
+      onSelected: (value) {
+        if (value == 'applyFilters') {
+          widget.onApplyFilters?.call();
+        } else if (value == 'resetFilters') {
+          widget.minSeatsController.text = '';
+          widget.minPowerSocketsController.text = '';
+          widget.typeController.text = '';
+          widget.availableNowController.text = '';
+          widget.onApplyFilters?.call();
+        }
+      },
+      itemBuilder: (BuildContext context) {
+        return <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'applyFilters',
+            child: Text('Apply Filters'),
+          ),
+          PopupMenuItem<String>(
+            value: 'resetFilters',
+            child: Text('Reset Filters'),
+          ),
+          PopupMenuItem<String>(
+            value: 'minSeats',
+            child: TextField(
+              controller: widget.minSeatsController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Minimum Seats',
+              ),
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'minPowerSockets',
+            child: TextField(
+              controller: widget.minPowerSocketsController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Minimum Power Sockets',
+              ),
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'type',
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Type',
+              ),
+              value: widget.typeController.text.isNotEmpty
+                  ? widget.typeController.text
+                  : null,
+              onChanged: (value) {
+                widget.typeController.text = value ?? '';
+              },
+              items: [
+                DropdownMenuItem<String>(
+                  value: 'Auditorium',
+                  child: Text('Auditorium'),
+                ),
+                DropdownMenuItem<String>(
+                  value: 'Classroom',
+                  child: Text('Classroom'),
+                ),
+                DropdownMenuItem<String>(
+                  value: 'Office',
+                  child: Text('Office'),
+                ),
+                DropdownMenuItem<String>(
+                  value: 'Teaching Laboratory',
+                  child: Text('Teaching Laboratory'),
+                ),
+                DropdownMenuItem<String>(
+                  value: 'Videoconference Room',
+                  child: Text('Videoconference Room'),
+                ),
+                // Add more unique dropdown items as needed
+              ],
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'availableNow',
+            child: Row(
+              children: [
+                Text('Available Now'),
+                Spacer(),
+                Switch(
+                  value: widget.availableNowController.text == 'true',
+                  onChanged: (value) {
+                    widget.availableNowController.text = value.toString();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ];
+      },
     );
   }
 }
