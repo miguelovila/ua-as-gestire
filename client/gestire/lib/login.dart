@@ -91,6 +91,8 @@ class Login extends StatelessWidget {
                             }
                             login().then((value) {
                               if (value) {
+                                usernameController.clear();
+                                passwordController.clear();
                                 Navigator.pushReplacement(
                                     context,
                                     PageRouteBuilder(
