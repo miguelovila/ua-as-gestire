@@ -22,7 +22,7 @@ from __main__ import app, executor, checkToken
 # for numeric parameters, the filter means "greater than or equal to"
 
 
-@app.route('/api/rooms', methods=['GET'])
+@app.route('/api/rooms', methods=['POST'])
 def filterRooms():
 	try:
 		content = json.loads(request.data)
@@ -84,7 +84,8 @@ def filterRooms():
 		if len(rooms) > 0:
 			return json.dumps({"rooms": rooms}), 200
 		return json.dumps({"error": "No rooms found with the specified parameters"}), 400
-	except:
+	except Exception as e:
+		print(e)
 		return json.dumps({"error": "Invalid request"}), 400
 
 
