@@ -252,23 +252,16 @@ class EquipmentCard extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             child: ListTile(
               title: Text(
-                '${equipment.name}\n${equipment.description}',
+                equipment.name,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 5.0, bottom: 1.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.storage),
-                        const SizedBox(width: 5),
-                        Text('${equipment.locker}'),
-                      ],
-                    ),
-                  ],
+                child: Text(
+                  equipment.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -446,27 +439,7 @@ class _EquipmentDetailsDialogState extends State<EquipmentDetailsDialog> {
                               ),
                             ),
                           ],
-                        ),
-                        DataRow(
-                          cells: [
-                            const DataCell(
-                              Center(child: Text('Type')),
-                            ),
-                            DataCell(
-                              Center(child: Text(widget.equipment.type)),
-                            ),
-                          ],
-                        ),
-                        DataRow(
-                          cells: [
-                            const DataCell(
-                              Center(child: Text('Locker')),
-                            ),
-                            DataCell(
-                              Center(child: Text(widget.equipment.locker)),
-                            ),
-                          ],
-                        ),
+                        )
                       ],
                     ),
                   ),
