@@ -163,6 +163,91 @@ class _ReservationsState extends State<Reservations> {
     }
   }
 
+  String formatDateTime(int timestamp) {
+    var dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}, ${dateTime.hour}:${dateTime.minute}';
+  }
+
+  Future<void> returnEquipment(int equipmentId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+
+    try {
+      var url =
+          Uri.parse('http://localhost:5000/api/equipments/$equipmentId/return');
+      var headers = {"Content-Type": "application/json"};
+      var body = {"token": token};
+
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      print('Return Equipment response status code: ${response.statusCode}');
+      print('Return Equipment response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        var code = responseData['code'];
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Return Equipment'),
+              content: Text('Code: $code'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Return Equipment'),
+              content: Text('Failed to return equipment'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Return Equipment'),
+            content: Text('Error: $e'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,18 +258,29 @@ class _ReservationsState extends State<Reservations> {
         itemCount: reservations.length,
         itemBuilder: (context, index) {
           var reservation = reservations[index];
-          return ListTile(
-            title: Text(reservation.item is Room
-                ? reservation.item.name
-                : reservation.item.name),
-            subtitle: Text(reservation.item is Room
-                ? reservation.item.capacity
-                : 'Equipment'),
-            leading: reservation.item is Room
-                ? Image.network(reservation.item.available)
-                : Icon(Icons.electrical_services),
-            trailing: Text(
-              'Start: ${reservation.startTime}\nEnd: ${reservation.endTime}',
+          return GestureDetector(
+            onTap: () {
+              if (reservation.item is Equipment) {
+                returnEquipment(reservation.item.id);
+              }
+            },
+            child: ListTile(
+              title: Text(
+                reservation.item is Room
+                    ? reservation.item.name
+                    : reservation.item.name,
+              ),
+              subtitle: Text(
+                reservation.item is Room
+                    ? reservation.item.capacity
+                    : 'Equipment',
+              ),
+              leading: reservation.item is Room
+                  ? Image.network(reservation.item.available)
+                  : Icon(Icons.electrical_services),
+              trailing: Text(
+                'Start: ${formatDateTime(reservation.startTime)}\nEnd: ${formatDateTime(reservation.endTime)}',
+              ),
             ),
           );
         },
