@@ -264,6 +264,13 @@ class EquipmentCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              trailing: Text(
+                equipment.available ? 'Available' : 'Not Available',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: equipment.available ? Colors.green : Colors.red,
+                ),
+              ),
             ),
           ),
         ],
@@ -279,6 +286,7 @@ class Equipment {
   final String image;
   final String type;
   final String locker;
+  final bool available;
 
   Equipment({
     required this.id,
@@ -287,6 +295,7 @@ class Equipment {
     required this.image,
     required this.type,
     required this.locker,
+    required this.available,
   });
 
   factory Equipment.fromJson(dynamic json) {
@@ -297,6 +306,7 @@ class Equipment {
       image: json[5],
       type: json[3],
       locker: json[4],
+      available: json[6] == 1 ? true : false,
     );
   }
 }
@@ -439,7 +449,20 @@ class _EquipmentDetailsDialogState extends State<EquipmentDetailsDialog> {
                               ),
                             ),
                           ],
-                        )
+                        ),
+                        DataRow(
+                          cells: [
+                            const DataCell(
+                              Center(child: Text('Available')),
+                            ),
+                            DataCell(
+                              Center(
+                                  child: Text(widget.equipment.available
+                                      ? 'Yes'
+                                      : 'No')),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
