@@ -100,7 +100,7 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url = Uri.parse('http://localhost:5000/api/users/reservations');
+      var url = Uri.parse('http://192.168.0.100:5000/api/users/reservations');
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
@@ -173,8 +173,8 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url =
-          Uri.parse('http://localhost:5000/api/equipments/$equipmentId/return');
+      var url = Uri.parse(
+          'http://192.168.0.100:5000/api/equipments/$equipmentId/return');
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
