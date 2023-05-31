@@ -3,7 +3,7 @@ from flask import request
 from __main__ import app, executor, checkToken
 
 
-@app.route("/api/users/reservations", methods=["GET"]) 
+@app.route("/api/users/reservations", methods=["POST"]) 
 def getReservationsByToken():
 	try:
 		content = json.loads(request.data)

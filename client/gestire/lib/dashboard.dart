@@ -82,10 +82,10 @@ class _DashboardState extends State<Dashboard> {
                         currentPage = index;
                       });
                     },
-                    children: const [
-                      Rooms(),
-                      Equipments(),
-                      Records(),
+                    children: [
+                      const Rooms(),
+                      const Equipments(),
+                      Reservations()
                     ],
                   ),
                 ),
@@ -137,10 +137,10 @@ class _DashboardState extends State<Dashboard> {
                         currentPage = index;
                       });
                     },
-                    children: const [
-                      Rooms(),
-                      Equipments(),
-                      Records(),
+                    children: [
+                      const Rooms(),
+                      const Equipments(),
+                      Reservations()
                     ],
                   ),
                 ),
@@ -157,10 +157,10 @@ class _DashboardState extends State<Dashboard> {
                   currentPage = index;
                 });
               },
-              children: const [
-                Rooms(),
-                Equipments(),
-                Records(),
+              children: [
+                const Rooms(),
+                const Equipments(),
+                Reservations(),
                 AccountDialog(),
               ],
             ),
