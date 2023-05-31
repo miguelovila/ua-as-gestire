@@ -17,21 +17,17 @@ class _EquipmentsState extends State<Equipments> {
   List<Equipment> equipments = [];
   List<Equipment> filteredEquipments = [];
   TextEditingController searchController = TextEditingController();
-  TextEditingController typeController = TextEditingController();
-  TextEditingController lockerController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchEquipments({}); // Fetch equipments when the widget initializes
+    fetchEquipments(); // Fetch equipments when the widget initializes
     searchController.addListener(filterEquipments);
   }
 
   @override
   void dispose() {
     searchController.dispose();
-    typeController.dispose();
-    lockerController.dispose();
     super.dispose();
   }
 
@@ -41,18 +37,13 @@ class _EquipmentsState extends State<Equipments> {
     return token;
   }
 
-  void fetchEquipments(Map<String, dynamic> filters) async {
+  void fetchEquipments() async {
     String token = await getToken();
     try {
       var url = Uri.parse(API_EQUIPMENTS_URL);
       var body = {
         "token": token,
-        "filters": filters,
       };
-
-      // Remove the empty filter values from the request body
-      (body['filters'] as Map<String, dynamic>?)
-          ?.removeWhere((key, value) => value == '');
 
       var response = await http.post(
         url,
@@ -107,17 +98,6 @@ class _EquipmentsState extends State<Equipments> {
     });
   }
 
-  void applyFilters() {
-    String type = typeController.text;
-    String locker = lockerController.text;
-    Map<String, dynamic> filters = {
-      'type': type.isNotEmpty ? type : null,
-      'locker': locker.isNotEmpty ? locker : null,
-    };
-
-    fetchEquipments(filters);
-  }
-
   @override
   Widget build(BuildContext context) {
     int cardsPerRow = 1;
@@ -146,9 +126,6 @@ class _EquipmentsState extends State<Equipments> {
                 SearchBar(
                   searchController: searchController,
                   gridWidthLimit: gridWidthLimit,
-                  onApplyFilters: applyFilters,
-                  typeController: typeController,
-                  lockerController: lockerController,
                 ),
                 const SizedBox(height: 20.0),
                 Expanded(
@@ -171,16 +148,10 @@ class _EquipmentsState extends State<Equipments> {
 class SearchBar extends StatelessWidget {
   final TextEditingController searchController;
   final double gridWidthLimit;
-  final Function()? onApplyFilters;
-  final TextEditingController typeController;
-  final TextEditingController lockerController;
 
   const SearchBar({
     required this.searchController,
     required this.gridWidthLimit,
-    this.onApplyFilters,
-    required this.typeController,
-    required this.lockerController,
   });
 
   @override
@@ -195,104 +166,8 @@ class SearchBar extends StatelessWidget {
           border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(100.0)),
           ),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FilterIcon(
-                onApplyFilters: onApplyFilters,
-                typeController: typeController,
-                lockerController: lockerController,
-              ),
-              SizedBox(width: 15),
-              Icon(Icons.qr_code),
-              SizedBox(width: 25),
-            ],
-          ),
         ),
       ),
-    );
-  }
-}
-
-class FilterIcon extends StatefulWidget {
-  final Function()? onApplyFilters;
-  final TextEditingController typeController;
-  final TextEditingController lockerController;
-
-  const FilterIcon({
-    this.onApplyFilters,
-    required this.typeController,
-    required this.lockerController,
-  });
-
-  @override
-  _FilterIconState createState() => _FilterIconState();
-}
-
-class _FilterIconState extends State<FilterIcon> {
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.filter_alt),
-      onSelected: (value) {
-        if (value == 'applyFilters') {
-          widget.onApplyFilters?.call();
-        } else if (value == 'resetFilters') {
-          widget.typeController.text = '';
-          widget.lockerController.text = '';
-          widget.onApplyFilters?.call();
-        }
-      },
-      itemBuilder: (BuildContext context) {
-        return <PopupMenuEntry<String>>[
-          PopupMenuItem<String>(
-            value: 'applyFilters',
-            child: Text('Apply Filters'),
-          ),
-          PopupMenuItem<String>(
-            value: 'resetFilters',
-            child: Text('Reset Filters'),
-          ),
-          PopupMenuItem<String>(
-            value: 'type',
-            child: DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Type',
-              ),
-              value: widget.typeController.text.isNotEmpty
-                  ? widget.typeController.text
-                  : null,
-              onChanged: (value) {
-                widget.typeController.text = value ?? '';
-              },
-              items: [
-                DropdownMenuItem<String>(
-                  value: 'Oscilloscope',
-                  child: Text('Oscilloscope'),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'Development Board & Kit',
-                  child: Text('Development Board & Kit'),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'Development Board',
-                  child: Text('Development Board'),
-                ),
-                // Add more unique dropdown items as needed
-              ],
-            ),
-          ),
-          PopupMenuItem<String>(
-            value: 'locker',
-            child: TextField(
-              controller: widget.lockerController,
-              decoration: const InputDecoration(
-                labelText: 'Locker',
-              ),
-            ),
-          ),
-        ];
-      },
     );
   }
 }
