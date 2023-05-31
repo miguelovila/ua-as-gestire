@@ -13,10 +13,11 @@ from __main__ import app, executor, checkToken
 # for numeric parameters, the filter means "greater than or equal to"
 
 
-@app.route("/api/equipments", methods=["GET"])
+@app.route("/api/equipments", methods=["POST"])
 def listEquipments():
 	try:
 		content = json.loads(request.data)
+		print(content)
 		if not checkToken(content["token"], False):
 			return json.dumps({"error": "Access denied"}), 401
 
@@ -28,7 +29,7 @@ def listEquipments():
 		return json.dumps({"error": "Invalid request"}), 400
 
 
-@app.route("/api/equipments/<int:equipment_id>", methods=["GET"])
+@app.route("/api/equipments/<int:equipment_id>", methods=["POST"])
 def getEquipment(equipment_id):
 	try:
 		content = json.loads(request.data)
