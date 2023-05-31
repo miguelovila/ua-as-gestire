@@ -127,9 +127,7 @@ class _RoomReservationFormState extends State<RoomReservationForm> {
             )
             .closed
             .then((reason) {
-          if (reason != SnackBarClosedReason.action) {
-            Navigator.of(context).pop();
-          }
+          if (reason != SnackBarClosedReason.action) {}
         });
       }
     }

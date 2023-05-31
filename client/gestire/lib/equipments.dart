@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
-//import 'equipment_reservation.dart';
+import 'equipment_reservation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login.dart';
@@ -341,16 +341,24 @@ class _EquipmentDetailsDialogState extends State<EquipmentDetailsDialog> {
                   children: [
                     Text(
                       'Reservation',
+                      textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 16.0),
-                    //EquipmentReservationForm(
-                    //  equipmentId: widget.equipment.id,
-                    //  onSuccess: () {
-                    //    Navigator.of(context).pop();
-                    //  },
-                    //),
+                    // DIsble the reservation button if the equipment is not available
+                    widget.equipment.available
+                        ? EquipmentReservationForm(
+                            equipmentId: widget.equipment.id,
+                            available: widget.equipment.available,
+                            onSuccess: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        : Text(
+                            'This equipment is not available for reservation.',
+                            textAlign: TextAlign.center,
+                          ),
                   ],
                 ),
               ),

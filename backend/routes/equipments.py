@@ -69,10 +69,7 @@ def reserveEquipment(equipment_id):
 			if equipment[0][6] == 1:
 				start_time = int(time.time())
 				end_time = start_time + int(content['duration'])
-				usage_place = content['usage_place'] if 'usage_place' in content else None
-				
-				if start_time < 0 or end_time < 0 or end_time - start_time < 900:
-					return json.dumps({"error": "Invalid time"}), 400
+				usage_place = content['reason'] if 'reason' in content else None
 				
 				executor("INSERT INTO equipment_reservations (equipment_id, user_id, start_time, end_time, usage_place) VALUES (?, ?, ?, ?, ?);", (equipment_id, user_id, start_time, end_time, usage_place))
 				executor("UPDATE equipments SET available = 0 WHERE id = ?;", (equipment_id,))
