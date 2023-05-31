@@ -28,5 +28,6 @@ def getLocker(code):
 			"type": code_data["type"],
 			"locker": locker
 		}, 200
-	except:
+	except Exception as e:
+		print("[ERROR] ", e)
 		return json.dumps({"error": "Invalid request"}), 400

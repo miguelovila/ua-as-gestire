@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gestire/dashboard.dart';
+import 'constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 final usernameController = TextEditingController();
 final passwordController = TextEditingController();
@@ -80,43 +84,32 @@ class Login extends StatelessWidget {
                           child: Text('Sign in'),
                         ),
                         onPressed: () {
+                          FocusScopeNode currentFocus = FocusScope.of(context);
                           if (_formKey.currentState!.validate()) {
-                            // show a loading indicator and wait two seconds
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return WillPopScope(
-                                  onWillPop: () async => false,
-                                  child: const AlertDialog(
-                                    content: SizedBox(
-                                      height: 100,
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                            Future.delayed(const Duration(seconds: 2), () {
-                              // close the dialog and navigate to the home page
-                              Navigator.pop(context);
-                              if (usernameController.text == 'admin@ua.pt') {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Dashboard()));
-                              } else {
+                            if (!currentFocus.hasPrimaryFocus) {
+                              currentFocus.unfocus();
+                            }
+                            login().then((value) {
+                              if (value) {
                                 usernameController.clear();
                                 passwordController.clear();
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration:
+                                          const Duration(milliseconds: 500),
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          FadeTransition(
+                                        opacity: animation,
+                                        child: const Dashboard(),
+                                      ),
+                                    ));
+                              } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Invalid username or password!'),
-                                  ),
-                                );
+                                    const SnackBar(
+                                        content: Text(
+                                            'Invalid username or password')));
                               }
                             });
                           }
@@ -129,5 +122,30 @@ class Login extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<bool> login() async {
+    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
+    var url = Uri.parse(API_LOGIN_URL);
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": usernameController.text,
+          "password": passwordController.text
+        }));
+    if (response.statusCode == 200) {
+      await sharedPreference.setInt('mec', jsonDecode(response.body)['mec']);
+      await sharedPreference.setString(
+          'name', jsonDecode(response.body)['name']);
+      await sharedPreference.setString(
+          'email', jsonDecode(response.body)['email']);
+      await sharedPreference.setString(
+          'profile_picture', jsonDecode(response.body)['profile_picture']);
+      await sharedPreference.setString(
+          'token', jsonDecode(response.body)['token']);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

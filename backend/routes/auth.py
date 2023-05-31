@@ -40,7 +40,8 @@ def authenticate():
 					"error": "Invalid username or password"
 				}
 			), 401
-	except:
+	except Exception as e:
+		print("[ERROR] ", e)
 		return json.dumps(
 			{
 				"error": "Invalid request"
@@ -84,7 +85,8 @@ def checkToken(token=None, external=True):
 					}
 				), 401
 			return False
-	except:
+	except Exception as e:
+		print("[ERROR] ", e)
 		if external:
 			return json.dumps(
 				{

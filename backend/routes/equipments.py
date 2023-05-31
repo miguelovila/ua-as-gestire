@@ -13,10 +13,11 @@ from __main__ import app, executor, checkToken
 # for numeric parameters, the filter means "greater than or equal to"
 
 
-@app.route("/api/equipments", methods=["GET"])
+@app.route("/api/equipments", methods=["POST"])
 def listEquipments():
 	try:
 		content = json.loads(request.data)
+		print(content)
 		if not checkToken(content["token"], False):
 			return json.dumps({"error": "Access denied"}), 401
 
@@ -28,7 +29,7 @@ def listEquipments():
 		return json.dumps({"error": "Invalid request"}), 400
 
 
-@app.route("/api/equipments/<int:equipment_id>", methods=["GET"])
+@app.route("/api/equipments/<int:equipment_id>", methods=["POST"])
 def getEquipment(equipment_id):
 	try:
 		content = json.loads(request.data)
@@ -66,12 +67,9 @@ def reserveEquipment(equipment_id):
 		equipment = executor("SELECT * FROM equipments WHERE id = ?;", (equipment_id,))
 		if len(equipment) > 0:
 			if equipment[0][6] == 1:
-				start_time = int(content['start_time'])
+				start_time = int(time.time())
 				end_time = start_time + int(content['duration'])
-				usage_place = content['usage_place'] if 'usage_place' in content else None
-				
-				if start_time < 0 or end_time < 0 or end_time - start_time < 900:
-					return json.dumps({"error": "Invalid time"}), 400
+				usage_place = content['reason'] if 'reason' in content else None
 				
 				executor("INSERT INTO equipment_reservations (equipment_id, user_id, start_time, end_time, usage_place) VALUES (?, ?, ?, ?, ?);", (equipment_id, user_id, start_time, end_time, usage_place))
 				executor("UPDATE equipments SET available = 0 WHERE id = ?;", (equipment_id,))

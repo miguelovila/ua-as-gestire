@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestire/login.dart';
+import 'package:gestire/welcome.dart';
 
 void main() {
   runApp(const MainApp());
@@ -21,6 +21,6 @@ class MainApp extends StatelessWidget {
             useMaterial3: true,
             colorSchemeSeed: Colors.lightGreen,
             brightness: Brightness.dark),
-        home: const Login());
+        home: const Welcome());
   }
 }
