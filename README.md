@@ -8,7 +8,7 @@
   - [Installation](#installation)
   - [Running the Application](#running-the-application)
 - [Frontend](#frontend)
-- [Backend](#backend)
+- [Backend](#backend-2)
   - [Authentication Routes](#authentication-routes)
   - [Room Routes](#room-routes)
   - [Equipment Routes](#equipment-routes)
