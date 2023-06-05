@@ -22,7 +22,7 @@ Gestire is a room and equipment management system that allows users to book room
 
 ### Prerequisites
 
-#### Backend
+#### Backend (Recommended)
 
 - Any operating system that supports Python 3.11.\* and the required dependencies.
 - [Python 3.11.\*](https://www.python.org/downloads/)
@@ -37,7 +37,7 @@ Gestire is a room and equipment management system that allows users to book room
 
 ### Installation
 
-#### Backend
+#### Backend (Recommended)
 
 In order to install all the necessary dependencies, run the following command:
 
