@@ -40,7 +40,7 @@ class _EquipmentsState extends State<Equipments> {
   void fetchEquipments() async {
     String token = await getToken();
     try {
-      var url = Uri.parse(API_EQUIPMENTS_URL);
+      var url = Uri.http(BASE_URL, 'api/equipments');
       var body = {
         "token": token,
       };

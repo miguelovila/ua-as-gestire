@@ -48,7 +48,7 @@ class _RoomsState extends State<Rooms> {
   void fetchRooms(Map<String, dynamic> filters) async {
     String token = await getToken();
     try {
-      var url = Uri.parse(API_ROOMS_URL);
+      var url = Uri.http(BASE_URL, 'api/rooms');
       var body = {
         "token": token,
         "filters": filters,

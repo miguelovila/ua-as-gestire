@@ -125,26 +125,33 @@ class Login extends StatelessWidget {
   }
 
   Future<bool> login() async {
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    var url = Uri.parse(API_LOGIN_URL);
-    var response = await http.post(url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": usernameController.text,
-          "password": passwordController.text
-        }));
-    if (response.statusCode == 200) {
-      await sharedPreference.setInt('mec', jsonDecode(response.body)['mec']);
-      await sharedPreference.setString(
-          'name', jsonDecode(response.body)['name']);
-      await sharedPreference.setString(
-          'email', jsonDecode(response.body)['email']);
-      await sharedPreference.setString(
-          'profile_picture', jsonDecode(response.body)['profile_picture']);
-      await sharedPreference.setString(
-          'token', jsonDecode(response.body)['token']);
-      return true;
-    } else {
+    try {
+      SharedPreferences sharedPreference =
+          await SharedPreferences.getInstance();
+
+      var url = Uri.http(BASE_URL, 'api/auth');
+      var response = await http.post(url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "email": usernameController.text,
+            "password": passwordController.text
+          }));
+      if (response.statusCode == 200) {
+        await sharedPreference.setInt('mec', jsonDecode(response.body)['mec']);
+        await sharedPreference.setString(
+            'name', jsonDecode(response.body)['name']);
+        await sharedPreference.setString(
+            'email', jsonDecode(response.body)['email']);
+        await sharedPreference.setString(
+            'profile_picture', jsonDecode(response.body)['profile_picture']);
+        await sharedPreference.setString(
+            'token', jsonDecode(response.body)['token']);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
       return false;
     }
   }

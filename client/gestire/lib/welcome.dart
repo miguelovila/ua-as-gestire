@@ -84,7 +84,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
       return false;
     }
 
-    var url = Uri.parse(API_CHECK_TOKEN_URL);
+    var url = Uri.http(BASE_URL, 'api/auth/check');
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"token": sharedPreference.getString('token')}));

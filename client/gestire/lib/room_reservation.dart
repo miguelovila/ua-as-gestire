@@ -94,10 +94,9 @@ class _RoomReservationFormState extends State<RoomReservationForm> {
         "reason": descriptionController.text,
       };
 
-      final url = '${API_ROOMS_URL}/${widget.roomId}/reserve';
-
+      var url = Uri.http(BASE_URL, 'api/rooms/${widget.roomId}/reserve');
       var response = await http.post(
-        Uri.parse(url),
+        url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(body),
       );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'constants.dart';
 
 class Reservation {
   final int id;
@@ -100,7 +101,7 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url = Uri.parse('http://192.168.0.100:5000/api/users/reservations');
+      var url = Uri.http(BASE_URL, 'api/users/reservations');
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
@@ -156,10 +157,14 @@ class _ReservationsState extends State<Reservations> {
         });
       }
     } catch (e) {
-      setState(() {
-        reservations = [];
-      });
-      print('Error fetching reservations: $e');
+      try {
+        setState(() {
+          reservations = [];
+        });
+      } catch (e) {
+        print('Error fetching reservations: $e');
+      }
+      print("Error fetching reservations: $e");
     }
   }
 
@@ -173,8 +178,7 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url = Uri.parse(
-          'http://192.168.0.100:5000/api/equipments/$equipmentId/return');
+      var url = Uri.http(BASE_URL, 'api/equipments/$equipmentId/return');
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
