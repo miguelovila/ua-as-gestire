@@ -12,8 +12,7 @@
   - [Authentication Routes](#authentication-routes)
   - [Room Routes](#room-routes)
   - [Equipment Routes](#equipment-routes)
-  - [User Routes](#user-routes)
-  - [Log Routes](#log-routes)
+  - [User Routes](#users)
 
 ## Introduction
 
@@ -499,7 +498,7 @@ If there are errors in the request, the equipment is not available for return, o
 | 400         | Equipment not available for return. | The specified equipment is not available for return.    |
 | 500         | Internal server error.              | An internal server error occurred.                      |
 
-## User Reservations Route
+## Users
 
 ### POST /api/users/reservations
 
