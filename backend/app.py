@@ -7,14 +7,12 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-
-
-
 from routes.auth import *
 from routes.rooms import *
 from routes.equipments import *
 from routes.locker import *
 from routes.users import *
+from routes.images import *
 
 @app.route('/')
 def index():
