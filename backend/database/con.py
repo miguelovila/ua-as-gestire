@@ -219,7 +219,7 @@ def fillSampleEquipmentData():
     """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 4B', 'Development Board & Kit', '[]', '1C', 'http://gestire.miguelovila.com/api/images/raspberry.jpg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'http://gestire.miguelovila.com/api/images/raspberry3b.jpeg', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'http://gestire.miguelovila.com/api/images/raspberry_3b.jpeg', 1);"""
   )
   executor(
     """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('DETPIC', 'Development Board', '[]', '2A', 'http://gestire.miguelovila.com/api/images/DETPIC.jpg', 1);"""
