@@ -139,7 +139,7 @@ def fillSampleRoomData():
   if len(executor("SELECT * FROM rooms;")) > 0:
     return
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.01', 'Teaching Laboratory', 'https://imgur.com/NV97ZK3', 20, 10, 10, 10, 10, 10, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.01', 'Teaching Laboratory', 'https://i.imgur.com/HCHqmG4.jpg', 20, 10, 10, 10, 10, 10, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.02', 'Videoconference Room', 'https://imgur.com/WcVZhip', 60, 30, 0, 0, 0, 0, 1, 1, 1, '[]');"""
@@ -151,7 +151,7 @@ def fillSampleRoomData():
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.04', 'Teaching Laboratory', 'https://imgur.com/CawRs02', 20, 10, 10, 0, 0, 0, 0, 1, 1, '[]'); """
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.05', 'Office', 'https://imgur.com/HCHqmG4', 9, 3, 0, 0, 0, 0, 0, 0, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.05', 'Office', 'https://i.imgur.com/HCHqmG4.jpg', 9, 3, 0, 0, 0, 0, 0, 0, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.06', 'Teaching Laboratory', 'https://imgur.com/CawRs02', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
@@ -202,7 +202,7 @@ def fillSampleRoomData():
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.02', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.03', 'Teaching Lab', 'https://imgur.com/NV97ZK3', 30, 25, 0, 0, 0, 0, 1, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.03', 'Teaching Lab', 'https://i.imgur.com/HCHqmG4.jpg', 30, 25, 0, 0, 0, 0, 1, 1, 1, '[]');"""
   )
 
 
