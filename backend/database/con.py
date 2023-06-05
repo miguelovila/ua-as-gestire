@@ -115,21 +115,21 @@ def fillSampleUserData():
   executor(
     """
 			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', ?, 'https://imgur.com/h4uLWWl');
+			VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_1.png');
 		""",
       (bcrypt.hashpw("du0".encode("utf-8"), bcrypt.gensalt()),),
   )
   executor(
     """
 			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107001, 'Dummy User One', 'du1@ua.pt', ?, 'https://imgur.com/wRDDx00');
+			VALUES (107001, 'Dummy User One', 'du1@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_2.png');
 		""",
       (bcrypt.hashpw("du1".encode("utf-8"), bcrypt.gensalt()),),
   )
   executor(
     """
 			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'https://imgur.com/gFfkda4');
+			VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/professor_1.png');
 		""",
       (bcrypt.hashpw("du2".encode("utf-8"), bcrypt.gensalt()),),
   )
@@ -139,70 +139,70 @@ def fillSampleRoomData():
   if len(executor("SELECT * FROM rooms;")) > 0:
     return
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.01', 'Teaching Laboratory', 'https://i.imgur.com/HCHqmG4.jpg', 20, 10, 10, 10, 10, 10, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.01', 'Teaching Laboratory', 'http://gestire.miguelovila.com/api/images/lab1.jpg', 20, 10, 10, 10, 10, 10, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.02', 'Videoconference Room', 'https://imgur.com/WcVZhip', 60, 30, 0, 0, 0, 0, 1, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.02', 'Videoconference Room', 'http://gestire.miguelovila.com/api/images/sala_pc.jpg', 60, 30, 0, 0, 0, 0, 1, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.03', 'Office', 'https://i.imgur.com/HCHqmG4.jpg', 6, 4, 0, 0, 0, 0, 0, 0, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.03', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.04', 'Teaching Laboratory', 'https://imgur.com/CawRs02', 20, 10, 10, 0, 0, 0, 0, 1, 1, '[]'); """
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.04', 'Teaching Laboratory', 'http://gestire.miguelovila.com/api/images/resizer.jpeg', 20, 10, 10, 0, 0, 0, 0, 1, 1, '[]'); """
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.05', 'Office', 'https://i.imgur.com/HCHqmG4.jpg', 9, 3, 0, 0, 0, 0, 0, 0, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.05', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 9, 3, 0, 0, 0, 0, 0, 0, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.06', 'Teaching Laboratory', 'https://imgur.com/CawRs02', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.06', 'Teaching Laboratory', 'http://gestire.miguelovila.com/api/images/lab1.jpg', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.07', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.07', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.19', 'Classroom', 'https://imgur.com/N5z8aLk', 40, 30, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.19', 'Classroom', 'http://gestire.miguelovila.com/api/images/sala_aula.jpeg', 40, 30, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.23', 'Teaching Laboratory', 'https://imgur.com/CawRs02', 20, 15, 10, 5, 5, 5, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.23', 'Teaching Laboratory', 'http://gestire.miguelovila.com/api/images/lab1.jpg', 20, 15, 10, 5, 5, 5, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.24', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.24', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.25', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.25', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.26', 'Classroom', 'https://imgur.com/N5z8aLk', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.26', 'Classroom', 'http://gestire.miguelovila.com/api/images/sala_aula.jpeg', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.27', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.27', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.28', 'Classroom', 'https://imgur.com/N5z8aLk', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.28', 'Classroom', 'http://gestire.miguelovila.com/api/images/sala_aula.jpeg', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.29', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.29', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.30', 'Classroom', 'https://imgur.com/N5z8aLk', 30, 25, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.30', 'Classroom', 'http://gestire.miguelovila.com/api/images/sala_aula.jpeg', 30, 25, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.32', 'Classroom', 'https://imgur.com/N5z8aLk', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.32', 'Classroom', 'http://gestire.miguelovila.com/api/images/sala_aula.jpeg', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('ANF IV', 'Auditorium', 'https://imgur.com/djyxGVm', 200, 70, 0, 0, 0, 0, 1, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('ANF IV', 'Auditorium', 'http://gestire.miguelovila.com/api/images/auditorio1.jpg', 200, 70, 0, 0, 0, 0, 1, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('ANF V', 'Auditorium', 'https://imgur.com/sNcNVhg', 200, 70, 0, 0, 0, 0, 1, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('ANF V', 'Auditorium', 'http://gestire.miguelovila.com/api/images/auditorio.jpeg', 200, 70, 0, 0, 0, 0, 1, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.01', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.01', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.02', 'Office', 'https://imgur.com/HCHqmG4', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.02', 'Office', 'http://gestire.miguelovila.com/api/images/gabinete.jpeg', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.03', 'Teaching Lab', 'https://i.imgur.com/HCHqmG4.jpg', 30, 25, 0, 0, 0, 0, 1, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.2.03', 'Teaching Laboratory', 'http://gestire.miguelovila.com/api/images/resizer.jpeg', 30, 25, 0, 0, 0, 0, 1, 1, 1, '[]');"""
   )
 
 
@@ -210,26 +210,26 @@ def fillSampleEquipmentData():
   if len(executor("SELECT * FROM equipments;")) > 0:
       return
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Oscilloscope', 'Oscilloscope', '[]', '1A', 'https://imgur.com/QyZJERH', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Oscilloscope', 'Oscilloscope', '[]', '1A', 'http://gestire.miguelovila.com/api/images/osciloscopio.webp', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Arduino UNO', 'Development Board & Kit', '[]', '1B', 'https://imgur.com/BVO58lp', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Arduino UNO', 'Development Board & Kit', '[]', '1B', 'http://gestire.miguelovila.com/api/images/arduino.jpg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 4B', 'Development Board & Kit', '[]', '1C', 'https://imgur.com/387yPdI', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 4B', 'Development Board & Kit', '[]', '1C', 'http://gestire.miguelovila.com/api/images/raspberry.jpg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'https://imgur.com/L2szpzS', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('Raspberry Pi 3B+', 'Development Board & Kit', '[]', '1D', 'http://gestire.miguelovila.com/api/images/raspberry3b.jpeg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('DETPIC', 'Development Board', '[]', '2A', 'https://imgur.com/mRI1Kfx', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('DETPIC', 'Development Board', '[]', '2A', 'http://gestire.miguelovila.com/api/images/DETPIC.jpg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'https://imgur.com/SbpygpX', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone IV', 'Development Board', '[]', '2B', 'http://gestire.miguelovila.com/api/images/FPGA_IV.webp', 1);"""
   )
   executor(	
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2C', 'https://imgur.com/7pcIVPn', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2C', 'http://gestire.miguelovila.com/api/images/FPGAV.jpg', 1);"""
   )
   executor(
-    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2D', 'https://imgur.com/7pcIVPn', 1);"""
+    """INSERT INTO equipments (name, description, reservations, locker, image, available) VALUES ('FPGA Cyclone V', 'Development Board', '[]', '2D', 'http://gestire.miguelovila.com/api/images/FPGAV.jpg', 1);"""
   )
