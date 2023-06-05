@@ -130,12 +130,19 @@ class Login extends StatelessWidget {
           await SharedPreferences.getInstance();
 
       var url = Uri.http(BASE_URL, 'api/auth');
-      var response = await http.post(url,
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "email": usernameController.text,
-            "password": passwordController.text
-          }));
+      var body = {
+        "email": usernameController.text,
+        "password": passwordController.text
+      };
+
+      print(url);
+
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+
       if (response.statusCode == 200) {
         await sharedPreference.setInt('mec', jsonDecode(response.body)['mec']);
         await sharedPreference.setString(

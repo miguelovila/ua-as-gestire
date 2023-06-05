@@ -79,9 +79,6 @@ class _EquipmentsState extends State<Equipments> {
         });
       }
     } catch (e) {
-      setState(() {
-        filteredEquipments = [];
-      });
       print('Error fetching equipments: $e');
     }
   }

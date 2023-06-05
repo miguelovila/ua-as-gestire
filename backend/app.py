@@ -1,8 +1,14 @@
 from cfg import *
+from flask_cors import CORS, cross_origin
 from database.con import *
 from flask import Flask, jsonify 
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
+
 
 from routes.auth import *
 from routes.rooms import *
