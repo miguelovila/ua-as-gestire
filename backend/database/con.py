@@ -154,13 +154,13 @@ def fillSampleRoomData():
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.05', 'Office', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/gabinete.jpeg?raw=true', 9, 3, 0, 0, 0, 0, 0, 0, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.06', 'Teaching Laboratory', 'https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F007%2F050%2Foriginal.jpg&width=1200', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.06', 'Teaching Laboratory', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/lab1.jpg?raw=true', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.07', 'Office', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/gabinete.jpeg?raw=true', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.19', 'Classroom', 'https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F000%2F883%2Foriginal.jpg&width=1200', 40, 30, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.19', 'Classroom', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/sala_aula.jpeg?raw=true', 40, 30, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.23', 'Teaching Laboratory', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/lab1.jpg?raw=true', 20, 15, 10, 5, 5, 5, 0, 1, 1, '[]');"""
@@ -172,22 +172,22 @@ def fillSampleRoomData():
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.25', 'Office', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/gabinete.jpeg?raw=true', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.26', 'Classroom', 'https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F000%2F883%2Foriginal.jpg&width=1200', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.26', 'Classroom', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/sala_aula.jpeg?raw=true', 20, 10, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.27', 'Office', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/gabinete.jpeg?raw=true', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.28', 'Classroom', '', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.28', 'Classroom', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/sala_aula.jpeg?raw=true', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.29', 'Office', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/gabinete.jpeg?raw=true', 6, 4, 0, 0, 0, 0, 0, 0, 0, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.30', 'Classroom', 'https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F000%2F883%2Foriginal.jpg&width=1200', 30, 25, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.30', 'Classroom', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/sala_aula.jpeg?raw=true', 30, 25, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
-    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.32', 'Classroom', 'https://api-assets.ua.pt/v1/image/resizer?imageUrl=https%3A%2F%2Fapi-assets.ua.pt%2Ffiles%2Fimgs%2F000%2F000%2F883%2Foriginal.jpg&width=1200', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
+    """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('4.1.32', 'Classroom', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/sala_aula.jpeg?raw=true', 20, 20, 0, 0, 0, 0, 0, 1, 1, '[]');"""
   )
   executor(
     """INSERT INTO rooms (name, description, image, capacity, power_sockets, computers, oscilloscopes, signal_generators, multimeters, sound_system, projector, whiteboard, reservations) VALUES ('ANF IV', 'Auditorium', 'https://github.com/miguelovila/ua-as-gestire-project/blob/main/images/auditorio.jpeg?raw=true', 200, 70, 0, 0, 0, 0, 1, 1, 1, '[]');"""
