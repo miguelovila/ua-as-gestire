@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gestire/login.dart';
-import 'package:gestire/rooms.dart';
-import 'package:gestire/equipments.dart';
-import 'package:gestire/records.dart';
+import 'login.dart';
+import 'rooms.dart';
+import 'equipments.dart';
+import 'records.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'constants.dart';
 
 extension StringCasingExtension on String {
   String toCapitalized() =>
@@ -279,7 +280,9 @@ class _AccountDialogState extends State<AccountDialog> {
                     CircleAvatar(
                       radius: 50,
                       backgroundImage: profilePicture != null
-                          ? NetworkImage(profilePicture)
+                          ? NetworkImage(USE_HTTPS
+                              ? profilePicture.replaceFirst('http', 'https')
+                              : profilePicture)
                           : null,
                       child: profilePicture == null
                           ? const Icon(Icons.person)

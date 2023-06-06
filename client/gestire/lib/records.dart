@@ -101,7 +101,13 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url = Uri.http(BASE_URL, 'api/users/reservations');
+      Uri url;
+
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/users/reservations');
+      } else {
+        url = Uri.http(BASE_URL, 'api/users/reservations');
+      }
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
@@ -178,7 +184,13 @@ class _ReservationsState extends State<Reservations> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      var url = Uri.http(BASE_URL, 'api/equipments/$equipmentId/return');
+      Uri url;
+
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/equipments/$equipmentId/return');
+      } else {
+        url = Uri.http(BASE_URL, 'api/equipments/$equipmentId/return');
+      }
       var headers = {"Content-Type": "application/json"};
       var body = {"token": token};
 
@@ -280,7 +292,9 @@ class _ReservationsState extends State<Reservations> {
                     : 'Equipment',
               ),
               leading: reservation.item is Room
-                  ? Image.network(reservation.item.available)
+                  ? Image.network(USE_HTTPS
+                      ? reservation.item.available.replaceFirst('http', 'https')
+                      : reservation.item.available)
                   : Icon(Icons.electrical_services),
               trailing: Text(
                 'Start: ${formatDateTime(reservation.startTime)}\nEnd: ${formatDateTime(reservation.endTime)}',

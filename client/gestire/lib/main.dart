@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestire/welcome.dart';
+import 'welcome.dart';
 
 void main() {
   runApp(const MainApp());

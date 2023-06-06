@@ -93,8 +93,13 @@ class _RoomReservationFormState extends State<RoomReservationForm> {
         "duration": duration.toString(),
         "reason": descriptionController.text,
       };
+      Uri url;
 
-      var url = Uri.http(BASE_URL, 'api/rooms/${widget.roomId}/reserve');
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/rooms/${widget.roomId}/reserve');
+      } else {
+        url = Uri.http(BASE_URL, 'api/rooms/${widget.roomId}/reserve');
+      }
       var response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},

@@ -48,7 +48,13 @@ class _RoomsState extends State<Rooms> {
   void fetchRooms(Map<String, dynamic> filters) async {
     String token = await getToken();
     try {
-      var url = Uri.http(BASE_URL, 'api/rooms');
+      Uri url;
+
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/rooms');
+      } else {
+        url = Uri.http(BASE_URL, 'api/rooms');
+      }
       var body = {
         "token": token,
         "filters": filters,
@@ -416,6 +422,11 @@ class RoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var image = room.image;
+    if (USE_HTTPS) {
+      image = room.image.replaceFirst('http', 'https');
+    }
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -426,7 +437,7 @@ class RoomCard extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Image.network(
-                  room.image,
+                  image,
                   fit: BoxFit.cover,
                 ),
               ),

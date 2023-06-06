@@ -40,7 +40,13 @@ class _EquipmentsState extends State<Equipments> {
   void fetchEquipments() async {
     String token = await getToken();
     try {
-      var url = Uri.http(BASE_URL, 'api/equipments');
+      Uri url;
+
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/equipments');
+      } else {
+        url = Uri.http(BASE_URL, 'api/equipments');
+      }
       var body = {
         "token": token,
       };
@@ -229,6 +235,11 @@ class EquipmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var image = equipment.image;
+    if (USE_HTTPS) {
+      image = equipment.image.replaceFirst('http', 'https');
+    }
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -239,7 +250,7 @@ class EquipmentCard extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Image.network(
-                  equipment.image,
+                  image,
                   fit: BoxFit.cover,
                 ),
               ),

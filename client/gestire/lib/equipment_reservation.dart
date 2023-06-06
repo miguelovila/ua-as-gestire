@@ -50,8 +50,15 @@ class _EquipmentReservationFormState extends State<EquipmentReservationForm> {
       String token = await getToken();
       final body = {"token": token, "duration": durationController.text};
 
-      var url =
-          Uri.http(BASE_URL, 'api/equipments/${widget.equipmentId}/reserve');
+      Uri url;
+
+      if (USE_HTTPS) {
+        url =
+            Uri.https(BASE_URL, 'api/equipments/${widget.equipmentId}/reserve');
+      } else {
+        url =
+            Uri.http(BASE_URL, 'api/equipments/${widget.equipmentId}/reserve');
+      }
       var response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},

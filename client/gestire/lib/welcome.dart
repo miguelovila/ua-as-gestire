@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gestire/dashboard.dart';
-import 'package:gestire/login.dart';
-import 'package:gestire/constants.dart';
+import 'dashboard.dart';
+import 'login.dart';
+import 'constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -84,7 +84,13 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
       return false;
     }
 
-    var url = Uri.http(BASE_URL, 'api/auth/check');
+    Uri url;
+
+    if (USE_HTTPS) {
+      url = Uri.https(BASE_URL, 'api/auth/check');
+    } else {
+      url = Uri.http(BASE_URL, 'api/auth/check');
+    }
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"token": sharedPreference.getString('token')}));

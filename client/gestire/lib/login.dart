@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:gestire/dashboard.dart';
+import 'dashboard.dart';
 import 'constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -128,8 +128,13 @@ class Login extends StatelessWidget {
     try {
       SharedPreferences sharedPreference =
           await SharedPreferences.getInstance();
+      Uri url;
 
-      var url = Uri.http(BASE_URL, 'api/auth');
+      if (USE_HTTPS) {
+        url = Uri.https(BASE_URL, 'api/auth');
+      } else {
+        url = Uri.http(BASE_URL, 'api/auth');
+      }
       var body = {
         "email": usernameController.text,
         "password": passwordController.text
