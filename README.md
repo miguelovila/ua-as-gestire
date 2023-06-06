@@ -4,11 +4,9 @@
 
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Running the Application](#running-the-application)
-- [Frontend](#frontend)
-- [Backend](#backend-1)
+- [Automated Testing](#automated-testing)
+- [Developing](#developing)
+- [Backend Documentation](#backend-documentation)
   - [Authentication Routes](#authentication-routes)
   - [Room Routes](#room-routes)
   - [Equipment Routes](#equipment-routes)
@@ -18,40 +16,76 @@
 
 Gestire is a room and equipment management system that allows users to book rooms and equipment for their classes and events. The system is designed to be used by the staff and students of the School of DETI-UA. The system is composed of a web application, mobile application, a REST API and a hardware component.
 
+All urls are set to (https://gestire.miguelovila.com)[https://gestire.miguelovila.com]. If you want to run the backend and frontend locally, you can change the backend url in /backend/app.py and the frontend url in /client/gestire/lib/constants.dart. When running locally, make sure to also disable https.
+
+The deplyed version of the webapp can be found at (https://gestire.miguelovila.com)[https://gestire.miguelovila.com]. It is behind a Cloudflare Tunnel, thats why it is using https.
+
 ## Getting Started
 
-### Prerequisites
+To use and test the application follow this url: (https://gestire.miguelovila.com)[https://gestire.miguelovila.com].
 
-#### Backend (Recommended)
+Authenticate with the following credentials:
+
+- Email: du1@ua.pt Password: du1
+- Email: du2@ua.pt Password: du2
+- Email: du3@ua.pt Password: du3
+- Email: du4@ua.pt Password: du4
+- Email: du5@ua.pt Password: du5
+- Email: du6@ua.pt Password: du6
+
+## Automated Testing
+
+The tests are run by `tester.py` script. According to the script's logic, the tests should pass if the database is not initialized. If the database is initialized, some tests should fail.
+
+If DB is not initialized, all tests should pass.
+
+If DB is initialized, you should see 2 failed tests:
+
+```bash
+........FF.
+======================================================================
+FAIL: test_reserve_equipment (__main__.APITests.test_reserve_equipment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File ".../tests/tester.py", line 106, in test_reserve_equipment
+    self.assertEqual(response.status_code, 200)
+AssertionError: 400 != 200
+
+======================================================================
+FAIL: test_reserve_room (__main__.APITests.test_reserve_room)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File ".../tests/tester.py", line 75, in test_reserve_room
+    self.assertEqual(response.status_code, 200)
+AssertionError: 400 != 200
+
+----------------------------------------------------------------------
+Ran 11 tests in 4.635s
+
+FAILED (failures=2)
+```
+
+## Developing
 
 - Any operating system that supports Python 3.11.\* and the required dependencies.
 - [Python 3.11.\*](https://www.python.org/downloads/)
 - [pip](https://pip.pypa.io/en/stable/installing/)
-- [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html)
+- [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) (recommended)
 - [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/)
+- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/)
 - [bcrypt](https://pypi.org/project/bcrypt/)
-
-#### Frontend
-
-- Any operating system that supports a web browser.
-
-### Installation
-
-#### Backend (Recommended)
+- [flutter](https://flutter.dev/docs/get-started/install)
+- [dart](https://dart.dev/get-dart)
+- [Android Studio](https://developer.android.com/studio)
+- [Android SDK](https://developer.android.com/studio#downloads)
+- [Android Emulator](https://developer.android.com/studio/run/emulator)
+- etc...
 
 In order to install all the necessary dependencies, run the following command:
 
 ```bash
 pip install -r requirements.txt
 ```
-
-#### Frontend
-
-No installation is required for the frontend.
-
-### Running the Application
-
-#### Backend
 
 In order to run the server, run the following command:
 
@@ -67,17 +101,7 @@ python app.py
 > nodemon app.py
 > ```
 
-#### Frontend
-
-For the webapp, no installation is required for the frontend.
-
-For the mobile app, you can download the APK file from the releases page and install it on your Android device.
-
-## Frontend
-
-This frontend is written in flutter and dart. Follows material design 3 guidelines and is responsive to different screen sizes.
-
-## Backend
+## Backend Documentation
 
 This section describes the backend of the application, including the API routes and the database schema.
 
