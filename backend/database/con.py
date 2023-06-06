@@ -110,29 +110,57 @@ def executor(query, tupledata=None):
 
 
 def fillSampleUserData():
-  if len(executor("SELECT * FROM users;")) > 0:
-    return
-  executor(
-    """
-			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_1.png');
-		""",
-      (bcrypt.hashpw("du0".encode("utf-8"), bcrypt.gensalt()),),
-  )
-  executor(
-    """
-			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107001, 'Dummy User One', 'du1@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_2.png');
-		""",
-      (bcrypt.hashpw("du1".encode("utf-8"), bcrypt.gensalt()),),
-  )
-  executor(
-    """
-			INSERT INTO users (mec, name, email, password, profile_picture)
-			VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/professor_1.png');
-		""",
-      (bcrypt.hashpw("du2".encode("utf-8"), bcrypt.gensalt()),),
-  )
+    if len(executor("SELECT * FROM users;")) > 0:
+        return
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107000, 'Dummy User Zero', 'du0@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_1.png');
+        """,
+        (bcrypt.hashpw("du0".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107001, 'Dummy User One', 'du1@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_2.png');
+        """,
+        (bcrypt.hashpw("du1".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107002, 'Dummy User Two', 'du2@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/professor_1.png');
+        """,
+        (bcrypt.hashpw("du2".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107003, 'Dummy User Three', 'du3@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_3.png');
+        """,
+        (bcrypt.hashpw("du3".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107004, 'Dummy User Four', 'du4@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/student_4.jpg');
+        """,
+        (bcrypt.hashpw("du4".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107005, 'Dummy User Five', 'du5@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/professor_2.webp');
+        """,
+        (bcrypt.hashpw("du5".encode("utf-8"), bcrypt.gensalt()),),
+    )
+    executor(
+        """
+        INSERT INTO users (mec, name, email, password, profile_picture)
+        VALUES (107006, 'Dummy User Six', 'du6@ua.pt', ?, 'http://gestire.miguelovila.com/api/images/professor_3.jpg');
+        """,
+        (bcrypt.hashpw("du6".encode("utf-8"), bcrypt.gensalt()),),
+    )
 
 
 def fillSampleRoomData():
