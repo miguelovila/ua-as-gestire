@@ -26,16 +26,11 @@
 #define KB_YELLOW 19
 
 // WiFi configs
-const char *ssid = "gestire-demo";
-const char *password = "gestiregestire";
-IPAddress local_IP(192, 168, 0, 3);
-IPAddress gateway(192, 168, 0, 1);
-IPAddress subnet(255, 255, 255, 0);
-IPAddress primaryDNS(192, 168, 0, 1);
-IPAddress secondaryDNS(1, 1, 1, 1);
+const char *ssid = "";
+const char *password = "";
 
 // API configs
-const char *API_URL = "http://192.168.0.100:5000/api";
+const char *API_URL = "http://gestire.miguelovila.com/api";
 const char *API_SECRET = "farto_da_papelada_de_analise_de_sistemas";
 
 // Keypad configs
@@ -96,12 +91,6 @@ void setup()
     lcd.init();
     lcd.backlight();
     Serial.println("[INFO] LCD setup done");
-
-    Serial.println("[INFO] Setting up IP");
-    if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS))
-    {
-        Serial.println("[ERROR] Failed to configure IP");
-    }
 
     Serial.print("[INFO] Setting up WiFi");
     WiFi.mode(WIFI_STA);
@@ -271,6 +260,8 @@ void loop()
         serializeJson(jsonDoc, jsonPayload);
 
         http.begin(url);
+        Serial.print("[INFO] Sending request to ");
+        Serial.println(url);
         http.addHeader("Content-Type", "application/json");
         int httpResponseCode = http.POST(jsonPayload);
 
@@ -281,10 +272,12 @@ void loop()
             Serial.println(payload);
             if (httpResponseCode == 400)
             {
+                Serial.println("[ERROR 400] Invalid code");
                 state = S_INVALID;
             }
             else if (httpResponseCode == 200)
             {
+                Serial.println("[INFO] Code valid");
                 const size_t capacity = JSON_OBJECT_SIZE(2) + 30;
                 DynamicJsonDocument jsonDoc(capacity);
                 deserializeJson(jsonDoc, payload);
@@ -292,27 +285,32 @@ void loop()
                 const char *lockerValue = jsonDoc["locker"];
                 locker = new char[strlen(lockerValue) + 1];
                 strcpy(locker, lockerValue);
+                Serial.print("[INFO] Type: ");
                 if (strcmp(type, "put") == 0)
                 {
+                    Serial.println("put");
                     state = S_PUT;
                 }
                 else if (strcmp(type, "get") == 0)
                 {
+                    Serial.println("get");
                     state = S_GET;
                 }
                 else
                 {
+                    Serial.println("Error on HTTP request 1");
                     state = S_ERROR;
                 }
             }
             else
             {
+                Serial.println("Error on HTTP request 2");
                 state = S_ERROR;
             }
         }
         else
         {
-            Serial.println("Error on HTTP request");
+            Serial.println("Error on HTTP request 3");
             state = S_ERROR;
         }
         delay(2000);
