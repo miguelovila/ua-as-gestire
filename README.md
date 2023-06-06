@@ -20,7 +20,7 @@ Gestire is a room and equipment management system that allows users to book room
 
 All urls are set to https://gestire.miguelovila.com. If you want to run the backend and frontend locally, you can change the backend url in /backend/app.py and the frontend url in /client/gestire/lib/constants.dart. When running locally, make sure to also disable https.
 
-The deplyed version of the webapp can be found (here)[https://gestire.miguelovila.com]. It is behind a Cloudflare Tunnel, thats why it is using https.
+The deplyed version of the webapp can be found [here](https://gestire.miguelovila.com). It is behind a Cloudflare Tunnel, thats why it is using https.
 
 ## Team Members
 
@@ -33,7 +33,7 @@ This project was developed by group 603 composed by:
 
 ## Getting Started
 
-To use and test the application follow (this)[https://gestire.miguelovila.com] url.
+To use and test the application follow [this](https://gestire.miguelovila.com) url.
 
 Authenticate with the following credentials:
 
@@ -80,7 +80,7 @@ FAILED (failures=2)
 
 The hardware component is a ESP32 microcontroller that is connected to a keyapd, a LCD screen and a set of 8 relays. The microcontroller is connected to the backend through http (although it was nice to have used MQTT). The microcontroller is programmed to send a request to the backend when a pin code is entered in the keypad. The backend then checks if the pin code is valid and if it is, it sends a request to the microcontroller to open the door. The microcontroller then opens the door by activating a relay.
 
-Unfortunately, you cannot test the hardware component because it is not deployed anywhere. However, you can see the code in /lockers.
+Unfortunately, you cannot test the hardware component because it is not deployed anywhere. However, you can see the code in /lockers. Also, you can see it in action [here](https://youtube.com/shorts/Ew3Ff9O0Odw?feature=share)!
 
 ## Developing
 
