@@ -20,7 +20,7 @@ Gestire is a room and equipment management system that allows users to book room
 
 All urls are set to https://gestire.miguelovila.com. If you want to run the backend and frontend locally, you can change the backend url in /backend/app.py and the frontend url in /client/gestire/lib/constants.dart. When running locally, make sure to also disable https.
 
-The deplyed version of the webapp can be found [here](https://gestire.miguelovila.com). It is behind a Cloudflare Tunnel, thats why it is using https.
+The deployed version of the webapp can be found [here](https://gestire.miguelovila.com). It is behind a Cloudflare Tunnel, thats why it is using https.
 
 ## Team Members
 
