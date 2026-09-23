@@ -1,675 +1,147 @@
-# Gestire - Room and Equipment Management System
+# Gestire - Room Booking and Smart Equipment Lockers
 
-## Table of Contents
+Reserve an FPGA board in an app, receive a six-digit code, and enter it at a locker to collect the board. That is the equipment borrowing flow we built with Gestire: a Flutter application, a Python API, and an ESP32 controlling eight locker compartments.
 
-- [Introduction](#introduction)
-- [Team Members](#team-members)
-- [Getting Started](#getting-started)
-- [Automated Testing](#automated-testing)
-- [Hardware Component](#hardware-component)
-- [Developing](#developing)
-- [Backend Documentation](#backend-documentation)
-  - [Authentication Routes](#authentication-routes)
-  - [Room Routes](#room-routes)
-  - [Equipment Routes](#equipment-routes)
-  - [User Routes](#users)
+I built this project with three classmates in 2023 for Análise de Sistemas at the University of Aveiro. It brings room reservations and shared lab equipment into the same application, from finding a suitable space to opening the locker that holds the equipment you need.
 
-## Introduction
+[Watch the hardware demo](https://youtube.com/shorts/Ew3Ff9O0Odw). The former hosted application is no longer running; this repository contains the source, original builds, and project reports.
 
-Gestire is a room and equipment management system that allows users to book rooms and equipment for their classes and events. The system is designed to be used by the staff and students of the School of DETI-UA. The system is composed of a web application, mobile application, a REST API and a hardware component.
+## Why We Built It
 
-All urls are set to https://gestire.miguelovila.com. If you want to run the backend and frontend locally, you can change the backend url in /backend/app.py and the frontend url in /client/gestire/lib/constants.dart. When running locally, make sure to also disable https.
+The idea came from how we used rooms and equipment at DETI, the university's Department of Electronics, Telecommunications and Informatics. Finding a space meant knowing which rooms were available and whether they had enough seats, sockets, or the right equipment. Borrowing a development board added another problem: getting access to it outside class.
 
-The deployed version of the webapp can be found [here](https://gestire.miguelovila.com). It is behind a Cloudflare Tunnel, thats why it is using https.
+FPGA kits were a useful example. Kits assigned to small groups could sit in manual lockers while nobody in that group was using them. We wanted to make that equipment available as a shared pool, with reservations and a way for students to collect and return it themselves.
 
-## Team Members
+Gestire joined those two tasks. A student could find a room for a study session and borrow a board through the same interface. The locker gave the equipment reservation a physical endpoint: a code from the app would open the correct compartment.
 
-This project was developed by group 603 composed by:
+## What It Does
 
-- Diogo Silva (108212)
-- Ivo Delgado (107757)
-- Martim Carvalho (108749)
-- Miguel Vila (107276)
+- **Find rooms:** search by name or description and filter by minimum seats, power sockets, room type, and an “Available Now” option.
+- **Inspect and book a room:** view photos and facilities, then choose a date, start time, duration, and optional reason. The API checks the requested interval against existing reservations.
+- **Browse equipment:** search a catalogue of oscilloscopes, Arduino boards, Raspberry Pis, DETPIC boards, and FPGA kits, with availability shown on each card.
+- **Collect equipment:** reserve an available item and receive a six-digit PIN for its locker. Unclaimed pickups are scheduled for release after two minutes.
+- **Return equipment:** select an equipment reservation from the Records screen and request a new PIN to reopen its compartment.
+- **Review reservations:** see room and equipment bookings with their start and end times in one screen.
+- **Use the same app on different screens:** the Flutter interface adapts its navigation and card layout to the available width and includes light and dark themes.
 
-## Getting Started
+## From a Reservation to an Open Locker
 
-To use and test the application follow [this](https://gestire.miguelovila.com) url.
+The equipment flow connects all three parts of the project:
 
-Authenticate with the following credentials:
+1. The user selects an available item in the Flutter app and submits a reservation.
+2. Flask records the reservation in SQLite, marks the item unavailable, and returns a six-digit pickup code.
+3. At the locker, the user enters the code on a keypad. The ESP32 sends it to the API over Wi-Fi, together with the locker's shared secret.
+4. The API consumes the code and responds with the compartment identifier, such as `1A`, and the operation: `get` or `put`.
+5. The ESP32 shows instructions on its LCD and activates that compartment's relay for ten seconds.
 
-- Email: du1@ua.pt Password: du1
-- Email: du2@ua.pt Password: du2
-- Email: du3@ua.pt Password: du3
-- Email: du4@ua.pt Password: du4
-- Email: du5@ua.pt Password: du5
-- Email: du6@ua.pt Password: du6
+Returning an item uses the same hardware path with a new `put` code. When the API accepts that code, it marks the equipment available again. If a pickup code goes unused, a scheduled callback releases the item and records that it was not collected.
 
-## Automated Testing
+<p align="center">
+  <img src="images/apresentacao_2_page_9_1.jpg" alt="Early equipment reservation design showing the borrowing duration and usage location fields" width="260">
+  <img src="images/apresentacao_3.pptx_page_2_1.jpg" alt="Early pickup confirmation design displaying a six-digit locker PIN and a two-minute collection window" width="260">
+</p>
 
-The tests are run by `tester.py` script. According to the script's logic, the tests should pass if the database is not initialized. If the database is initialized, some tests should fail.
+*Original interface mockups from the project presentations: requesting an FPGA kit and receiving its pickup PIN.*
 
-If DB is not initialized, all tests should pass.
+```mermaid
+flowchart LR
+    App["Flutter app<br/>Rooms, equipment, records"]
+    API["Flask API<br/>Authentication and reservations"]
+    DB[(SQLite)]
+    Keypad["3 × 4 keypad<br/>Six-digit PIN"]
+    ESP["ESP32<br/>Locker state machine"]
+    LCD["20 × 4 I2C LCD"]
+    Relays["8 relay outputs<br/>Compartments 1A–2D"]
 
-If DB is initialized, you should see 2 failed tests:
-
-```bash
-........FF.
-======================================================================
-FAIL: test_reserve_equipment (__main__.APITests.test_reserve_equipment)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File ".../tests/tester.py", line 106, in test_reserve_equipment
-    self.assertEqual(response.status_code, 200)
-AssertionError: 400 != 200
-
-======================================================================
-FAIL: test_reserve_room (__main__.APITests.test_reserve_room)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File ".../tests/tester.py", line 75, in test_reserve_room
-    self.assertEqual(response.status_code, 200)
-AssertionError: 400 != 200
-
-----------------------------------------------------------------------
-Ran 11 tests in 4.635s
-
-FAILED (failures=2)
+    App -->|"HTTP / JSON requests"| API
+    API -->|"Bookings and PINs"| App
+    API <--> DB
+    Keypad --> ESP
+    ESP -->|"PIN + locker secret"| API
+    API -->|"Compartment + get / put"| ESP
+    ESP --> LCD
+    ESP --> Relays
 ```
 
-## Hardware Component
+The ESP32 initiates the request and acts on the response. The backend keeps track of users, reservations, and equipment locations; the firmware handles input, feedback, and relay timing.
 
-The hardware component is a ESP32 microcontroller that is connected to a keyapd, a LCD screen and a set of 8 relays. The microcontroller is connected to the backend through http (although it was nice to have used MQTT). The microcontroller is programmed to send a request to the backend when a pin code is entered in the keypad. The backend then checks if the pin code is valid and if it is, it sends a request to the microcontroller to open the door. The microcontroller then opens the door by activating a relay.
+## The Application
 
-Unfortunately, you cannot test the hardware component because it is not deployed anywhere. However, you can see the code in /lockers. Also, you can see it in action [here](https://youtube.com/shorts/Ew3Ff9O0Odw?feature=share)!
+The [Flutter client](client/gestire/lib/) has four main areas: Rooms, Equipment, Records, and Account. Wide windows use a labelled navigation rail, medium windows use a compact rail, and smaller screens use bottom navigation. Room and equipment cards adjust from one to three columns.
 
-## Developing
+Room search combines text filtering in the client with structured filters in the API. Each room also has a detailed inventory: computers, oscilloscopes, signal generators, multimeters, a sound system, a projector, and a whiteboard. Those details help someone choose a room before opening the reservation form.
 
-- Any operating system that supports Python 3.11.\* and the required dependencies.
-- [Python 3.11.\*](https://www.python.org/downloads/)
-- [pip](https://pip.pypa.io/en/stable/installing/)
-- [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) (recommended)
-- [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/)
-- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/)
-- [bcrypt](https://pypi.org/project/bcrypt/)
-- [flutter](https://flutter.dev/docs/get-started/install)
-- [dart](https://dart.dev/get-dart)
-- [Android Studio](https://developer.android.com/studio)
-- [Android SDK](https://developer.android.com/studio#downloads)
-- [Android Emulator](https://developer.android.com/studio/run/emulator)
-- etc...
+<p align="center">
+  <img src="images/apresentacao_2_page_8_1.jpg" alt="Early room browser design listing laboratories, classrooms, and offices with their seats, sockets, and facilities" width="260">
+  <img src="images/apresentacao_2_page_12_1.jpg" alt="Early Records screen design showing equipment and room reservations with their booking times" width="260">
+</p>
 
-In order to install all the necessary dependencies, run the following command:
+*Early designs for the room browser and the shared reservation history. The Flutter implementation described here evolved from these layouts.*
 
-```bash
-pip install -r requirements.txt
+Login stores the user's profile and session token locally. On startup, the app checks that token before opening the dashboard. The prototype uses seeded accounts and bcrypt password checks, with a ten-minute session timeout that renews on valid requests. University identity-provider integration appeared in the original plans; the implementation here uses its own authentication.
+
+The repository includes original Android, Linux, and web builds, all produced from the Flutter project.
+
+## The Locker Controller
+
+The [firmware](lockers/src/main.cpp) is written in C++ with the Arduino framework and built through PlatformIO. A state machine takes it through idle, code entry, processing, collection, return, cancellation, and error states.
+
+During code entry, `*` deletes a digit and `#` cancels. Entering the sixth digit submits the request. The LCD then identifies the compartment and tells the user whether to collect or return an item. Invalid codes and failed requests have their own messages before the controller returns to idle.
+
+<p align="center">
+  <a href="https://youtube.com/shorts/Ew3Ff9O0Odw">
+    <img src="images/Screenshot%20From%202026-09-23%2021-28-16.png" alt="Locker controller prototype with an ESP32, eight-channel relay board, LCD, and a user entering a code on the keypad" width="340">
+  </a>
+</p>
+
+*The assembled locker controller during code entry. Click the photo to watch the hardware demo.*
+
+| Part | Implementation |
+| --- | --- |
+| Controller | ESP32, PlatformIO `nodemcu-32s` target |
+| Input | 3 × 4 matrix keypad |
+| Display | 20 × 4 LCD over I2C, address `0x27` |
+| Outputs | Eight active-low relay channels, `1A`–`1D` and `2A`–`2D` |
+| Communication | HTTP requests over Wi-Fi, JSON responses |
+| Opening time | Ten seconds per accepted operation |
+
+## Looking Back at the Prototype
+
+The interesting boundary in this project is between a database reservation and something happening at a locker. A reservation, a collected item, and a returned item are different states. The pickup timeout and separate return code were our first steps towards representing that lifecycle.
+
+There is still a gap between accepting a code and confirming what happened physically. The API changes availability when it validates the code, and the controller opens the relay on a timer. There is no door or item sensor confirming a pickup or return. If I revisited the project, I would start there, along with persisting pending codes so a server restart could recover an operation in progress.
+
+This repository preserves the 2023 prototype. Room overlap checks, return-code expiry, and some client/API fields have known edge cases, described in the [implementation notes](DOCUMENTATION.md#implementation-notes). Room access control and university single sign-on remained outside the implemented system.
+
+## Technologies Used
+
+| Area | Technologies |
+| --- | --- |
+| Application | Flutter, Dart, Material 3, `http`, `shared_preferences` |
+| API | Python, Flask, Flask-CORS, bcrypt |
+| Storage | SQLite for users, sessions, rooms, equipment, and reservations |
+| Locker firmware | C++, Arduino framework, ESP32, PlatformIO |
+| Hardware interfaces | GPIO, matrix keypad, I2C LCD, relay outputs |
+| Protocol | HTTP and JSON, ArduinoJson on the ESP32 |
+| API tests | Python `unittest` and `requests` |
+
+## Exploring the Repository
+
+```text
+backend/             Flask routes, SQLite schema, sample data, and images
+client/gestire/       Flutter application and platform projects
+client/              Original Android, Linux, and web build archives
+lockers/             ESP32 firmware and PlatformIO configuration
+images/              Interface mockups and a photo of the locker controller
+tests/               Original HTTP API test script
+deliverables/        Coursework reports, presentations, and an older firmware copy
+DOCUMENTATION.md     Local setup, API reference, hardware wiring, and implementation notes
 ```
 
-In order to run the server, run the following command:
+For setup instructions and request examples, see [DOCUMENTATION.md](DOCUMENTATION.md). The original builds retain their old network configuration, so rebuilding from source is the starting point for running the application locally.
 
-```bash
-python app.py
-```
+## Team and Contributions
 
-> **Note:** The server will be running on port 5000 by default.
+Gestire was developed by **Diogo Silva, Ivo Delgado, Martim Carvalho, and Miguel Vila**. My work covered the Flutter interface and API integration, backend authentication and database setup, reservation flows, ESP32 firmware, and API tests. The [original reports and presentations](DOCUMENTATION.md#original-project-material) document the team's requirements, design, and development process.
 
-> If you have nodemon installed (recommended), you can run the following command instead:
->
-> ```bash
-> nodemon app.py
-> ```
-
-## Backend Documentation
-
-This section describes the backend of the application, including the API routes and the database schema.
-
-### POST /api/auth
-
-Authenticates a user with the specified email and password.
-
-#### Request Body
-
-| Field    | Type   | Required | Description          |
-| -------- | ------ | -------- | -------------------- |
-| email    | string | Yes      | The user's email.    |
-| password | string | Yes      | The user's password. |
-
-#### Response
-
-##### Success
-
-If the authentication is successful, the server will respond with a 200 OK status code and a JSON object containing the user's information and token:
-
-```json
-{
-  "mec": "<user_mec>",
-  "name": "<user_name>",
-  "email": "<user_email>",
-  "profile_picture": "<user_profile_picture>",
-  "token": "<user_token>"
-}
-```
-
-##### Error
-
-If the authentication fails, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                       | Description                                             |
-| ----------- | ----------------------------- | ------------------------------------------------------- |
-| 401         | Invalid username or password. | The email or password provided is invalid.              |
-| 401         | Invalid request.              | The request is missing required fields or is malformed. |
-| 500         | Internal server error.        | An internal server error occurred.                      |
-
-### POST /api/auth/check
-
-Checks the validity of a token.
-
-#### Request Body
-
-| Field | Type   | Required | Description       |
-| ----- | ------ | -------- | ----------------- |
-| token | string | Yes      | The user's token. |
-
-#### Response
-
-##### Success
-
-If the token is valid and has not expired, the server will respond with a 200 OK status code and a JSON object indicating that the token is valid:
-
-```json
-{
-  "valid": true
-}
-```
-
-##### Error
-
-If the token is invalid or has expired, the server will respond with an appropriate error status code and a JSON object indicating that the token is invalid:
-
-```json
-{
-  "valid": false
-}
-```
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Invalid token.         | The token provided is invalid or has expired.           |
-| 401         | Invalid request.       | The request is missing required fields or is malformed. |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-## Room Routes
-
-### POST /api/rooms
-
-Filters and retrieves rooms based on specified parameters.
-
-#### Request Body
-
-| Field           | Type    | Required | Description                                                      |
-| --------------- | ------- | -------- | ---------------------------------------------------------------- |
-| token           | string  | Yes      | The user's token.                                                |
-| filters         | object  | Yes      | The filter parameters for the rooms.                             |
-| minSeats        | number  | No       | The minimum number of seats required in the rooms.               |
-| minPowerSockets | number  | No       | The minimum number of power sockets required in the rooms.       |
-| type            | string  | No       | The type of room to filter (description field).                  |
-| availableNow    | boolean | No       | Flag indicating whether to filter for currently available rooms. |
-
-#### Response
-
-##### Success
-
-If the rooms are successfully filtered, the server will respond with a 200 OK status code and a JSON object containing the filtered rooms:
-
-```json
-{
-  "rooms": [
-    {
-      "id": 1,
-      "name": "Room 1",
-      "description": "Meeting Room",
-      "capacity": 10,
-      "power_sockets": 6,
-      "computers": 0,
-      "oscilloscopes": 0,
-      "signal_generators": 0,
-      "multimeters": 0,
-      "sound_system": true,
-      "projector": true,
-      "whiteboard": true
-    },
-    {
-      "id": 2,
-      "name": "Room 2",
-      "description": "Classroom",
-      "capacity": 20,
-      "power_sockets": 12,
-      "computers": 10,
-      "oscilloscopes": 2,
-      "signal_generators": 2,
-      "multimeters": 5,
-      "sound_system": true,
-      "projector": true,
-      "whiteboard": true
-    }
-  ]
-}
-```
-
-##### Error
-
-If there are errors in the request or no rooms are found with the specified parameters, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The user's token is invalid or expired.                 |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 400         | No rooms found.        | No rooms found with the specified parameters.           |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-### GET /api/rooms/{room_id}
-
-Retrieves details of a specific room.
-
-#### Request Parameters
-
-| Parameter | Type | Required | Description         |
-| --------- | ---- | -------- | ------------------- |
-| room_id   | int  | Yes      | The ID of the room. |
-
-#### Response
-
-##### Success
-
-If the room is found, the server will respond with a 200 OK status code and a JSON object containing the room details:
-
-```json
-{
-  "room": {
-    "id": 1,
-    "name": "Room 1",
-    "description": "Meeting Room",
-    "capacity": 10,
-    "power_sockets": 6,
-    "computers": 0,
-    "oscilloscopes": 0,
-    "signal_generators": 0,
-    "multimeters": 0,
-    "sound_system": true,
-    "projector": true,
-    "whiteboard": true
-  }
-}
-```
-
-##### Error
-
-If the room is not found or there are errors in
-
-the request, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The user's token is invalid or expired.                 |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 400         | Room not found.        | The specified room ID does not exist.                   |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-### POST /api/rooms/{room_id}/reserve
-
-Reserves a specific room for a specified time period.
-
-#### Request Parameters
-
-| Parameter | Type | Required | Description         |
-| --------- | ---- | -------- | ------------------- |
-| room_id   | int  | Yes      | The ID of the room. |
-
-#### Request Body
-
-| Field      | Type   | Required | Description                                         |
-| ---------- | ------ | -------- | --------------------------------------------------- |
-| token      | string | Yes      | The user's token.                                   |
-| start_time | number | Yes      | The start time of the reservation (Unix timestamp). |
-| duration   | number | Yes      | The duration of the reservation in seconds.         |
-| reason     | string | No       | The reason for the reservation (optional).          |
-
-#### Response
-
-##### Success
-
-If the room is successfully reserved, the server will respond with a 200 OK status code and a JSON object containing a success message:
-
-```json
-{
-  "success": "Room reserved"
-}
-```
-
-##### Error
-
-If there are errors in the request or the room is not available for the specified time period, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                   | Description                                              |
-| ----------- | ------------------------- | -------------------------------------------------------- |
-| 401         | Access denied.            | The user's token is invalid or expired.                  |
-| 400         | Invalid request.          | The request is missing required fields or is malformed.  |
-| 400         | Invalid reservation time. | The specified reservation time is invalid.               |
-| 400         | Room not available.       | The specified room is not available for the reservation. |
-| 500         | Internal server error.    | An internal server error occurred.                       |
-
-## Equipment Routes
-
-### POST /api/equipments
-
-Retrieves a list of equipments based on specified filters.
-
-#### Request Body
-
-| Field | Type   | Required | Description       |
-| ----- | ------ | -------- | ----------------- |
-| token | string | Yes      | The user's token. |
-
-#### Response
-
-##### Success
-
-If the equipments are successfully retrieved, the server will respond with a 200 OK status code and a JSON object containing the list of equipments:
-
-```json
-{
-  "equipments": [
-    {
-      "id": 1,
-      "name": "Equipment 1",
-      "description": "Equipment description",
-      "locker": "Locker 1",
-      "initial_date": "2023-06-01",
-      "final_date": "2023-06-10"
-    },
-    {
-      "id": 2,
-      "name": "Equipment 2",
-      "description": "Equipment description",
-      "locker": "Locker 2",
-      "initial_date": "2023-06-05",
-      "final_date": "2023-06-15"
-    }
-  ]
-}
-```
-
-##### Error
-
-If there are errors in the request or no equipments are found, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The user's token is invalid or expired.                 |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 400         | No equipments found.   | No equipments found with the specified parameters.      |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-### POST /api/equipments/{equipment_id}
-
-Retrieves details of a specific equipment.
-
-#### Request Parameters
-
-| Parameter    | Type | Required | Description              |
-| ------------ | ---- | -------- | ------------------------ |
-| equipment_id | int  | Yes      | The ID of the equipment. |
-
-#### Request Body
-
-| Field | Type   | Required | Description       |
-| ----- | ------ | -------- | ----------------- |
-| token | string | Yes      | The user's token. |
-
-#### Response
-
-##### Success
-
-If the equipment is found, the server will respond with a 200 OK status code and a JSON object containing the equipment details:
-
-```json
-{
-  "equipment": {
-    "id": 1,
-    "name": "Equipment 1",
-    "description": "Equipment description",
-    "locker": "Locker 1",
-    "initial_date": "2023-06-01",
-    "final_date": "2023-06-10"
-  }
-}
-```
-
-##### Error
-
-If the equipment is not found or there are errors in the request, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The user's token is invalid or expired.                 |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 400         | Equipment not found.   | The specified equipment ID does not exist.              |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-### POST /api/equipments/{equipment_id}/reserve
-
-Reserves a specific equipment for a specified time period.
-
-#### Request Parameters
-
-| Parameter    | Type | Required | Description |
-| ------------ | ---- | -------- | ----------- |
-| equipment_id |
-
-int | Yes | The ID of the equipment. |
-
-#### Request Body
-
-| Field    | Type   | Required | Description                                 |
-| -------- | ------ | -------- | ------------------------------------------- |
-| token    | string | Yes      | The user's token.                           |
-| duration | number | Yes      | The duration of the reservation in seconds. |
-| reason   | string | No       | The reason for the reservation (optional).  |
-
-#### Response
-
-##### Success
-
-If the equipment is successfully reserved, the server will respond with a 200 OK status code and a JSON object containing a success message and a reservation code:
-
-```json
-{
-  "message": "Equipment reserved",
-  "code": 123456
-}
-```
-
-##### Error
-
-If there are errors in the request, the equipment is not available, or there are issues with the reservation process, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                  | Description                                               |
-| ----------- | ------------------------ | --------------------------------------------------------- |
-| 401         | Access denied.           | The user's token is invalid or expired.                   |
-| 400         | Invalid request.         | The request is missing required fields or is malformed.   |
-| 400         | Equipment not available. | The specified equipment is not available for reservation. |
-| 500         | Internal server error.   | An internal server error occurred.                        |
-
-### POST /api/equipments/{equipment_id}/return
-
-Returns a specific equipment.
-
-#### Request Parameters
-
-| Parameter    | Type | Required | Description              |
-| ------------ | ---- | -------- | ------------------------ |
-| equipment_id | int  | Yes      | The ID of the equipment. |
-
-#### Request Body
-
-| Field | Type   | Required | Description       |
-| ----- | ------ | -------- | ----------------- |
-| token | string | Yes      | The user's token. |
-
-#### Response
-
-##### Success
-
-If the equipment return process is successful, the server will respond with a 200 OK status code and a JSON object containing a success message and a return code:
-
-```json
-{
-  "message": "Equipment return code",
-  "code": 123456
-}
-```
-
-##### Error
-
-If there are errors in the request, the equipment is not available for return, or there are issues with the return process, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                             | Description                                             |
-| ----------- | ----------------------------------- | ------------------------------------------------------- |
-| 401         | Access denied.                      | The user's token is invalid or expired.                 |
-| 400         | Invalid request.                    | The request is missing required fields or is malformed. |
-| 400         | Equipment not available for return. | The specified equipment is not available for return.    |
-| 500         | Internal server error.              | An internal server error occurred.                      |
-
-## Users
-
-### POST /api/users/reservations
-
-Retrieves reservations for a user based on their token.
-
-#### Request Body
-
-| Field | Type   | Required | Description       |
-| ----- | ------ | -------- | ----------------- |
-| token | string | Yes      | The user's token. |
-
-#### Response
-
-##### Success
-
-If the reservations are successfully retrieved, the server will respond with a 200 OK status code and a JSON object containing the user's reservations:
-
-```json
-{
-  "reservations": {
-    "rooms": [
-      {
-        "id": 1,
-        "start_time": 1667856000,
-        "end_time": 1667863200,
-        "room": {
-          "id": 1,
-          "name": "Room 1",
-          "capacity": 10,
-          "available": true
-        }
-      },
-      {
-        "id": 2,
-        "start_time": 1667900400,
-        "end_time": 1667907600,
-        "room": {
-          "id": 2,
-          "name": "Room 2",
-          "capacity": 20,
-          "available": true
-        }
-      }
-    ],
-    "equipments": [
-      {
-        "id": 1,
-        "start_time": 1667856000,
-        "end_time": 1667863200,
-        "equipment": {
-          "id": 1,
-          "name": "Equipment 1",
-          "available": true
-        }
-      },
-      {
-        "id": 2,
-        "start_time": 1667900400,
-        "end_time": 1667907600,
-        "equipment": {
-          "id": 2,
-          "name": "Equipment 2",
-          "available": true
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Error
-
-If there are errors in the request or no reservations are found for the user, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The user's token is invalid or expired.                 |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 404         | No reservations found. | No reservations found for the user.                     |
-| 500         | Internal server error. | An internal server error occurred.                      |
-
-## Locker Route
-
-### POST /api/locker/{code}
-
-Gets the locker associated with a code.
-
-#### Request Parameters
-
-| Parameter | Type | Required | Description      |
-| --------- | ---- | -------- | ---------------- |
-| code      | int  | Yes      | The locker code. |
-
-#### Request Body
-
-| Field | Type   | Required | Description              |
-| ----- | ------ | -------- | ------------------------ |
-| token | string | Yes      | The locker secret token. |
-
-#### Response
-
-##### Success
-
-If the locker code is valid and associated with an equipment, the server will respond with a 200 OK status code and a JSON object containing the locker information:
-
-```json
-{
-  "type": "get",
-  "locker": "Locker 1"
-}
-```
-
-or
-
-```json
-{
-  "type": "put",
-  "locker": "Locker 2"
-}
-```
-
-The `type` field indicates whether the code is associated with a "get" or "put" action.
-
-##### Error
-
-If there are errors in the request, the code is invalid, or there are issues with the locker retrieval process, the server will respond with an appropriate error status code and an error message:
-
-| Status Code | Message                | Description                                             |
-| ----------- | ---------------------- | ------------------------------------------------------- |
-| 401         | Access denied.         | The locker secret token is invalid.                     |
-| 400         | Invalid request.       | The request is missing required fields or is malformed. |
-| 400         | Invalid code.          | The specified code is invalid or expired.               |
-| 500         | Internal server error. | An internal server error occurred.                      |
+Released under the [MIT License](LICENSE).
