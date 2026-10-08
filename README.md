@@ -4,6 +4,8 @@ Reserve an FPGA board in an app, receive a six-digit code, and enter it at a loc
 
 I built this project with three classmates in 2023 for Análise de Sistemas at the University of Aveiro. It brings room reservations and shared lab equipment into the same application, from finding a suitable space to opening the locker that holds the equipment you need.
 
+![Gestire cover image](images/cover-image.png)
+
 [Watch the hardware demo](https://youtube.com/shorts/Ew3Ff9O0Odw). The former hosted application is no longer running; this repository contains the source, original builds, and project reports.
 
 ## Why We Built It
